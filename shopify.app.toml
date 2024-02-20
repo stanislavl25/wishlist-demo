@@ -1,0 +1,29 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "6d8f9b95beaaaa0029380b8706edce90"
+name = "wishlist"
+handle = "wishlist-418"
+application_url = "https://luggage-planes-lonely-liable.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "wishlist-test-220.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://luggage-planes-lonely-liable.trycloudflare.com/auth/callback",
+  "https://luggage-planes-lonely-liable.trycloudflare.com/auth/shopify/callback",
+  "https://luggage-planes-lonely-liable.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[pos]
+embedded = false
