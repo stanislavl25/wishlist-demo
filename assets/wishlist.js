@@ -309,28 +309,7 @@
           wishlistItemHtmlCache[item] = result;
         }
 
-        // const result = await response.json();
-
-        // console.log(result);
-
-        // const url = `${langPrimary === "true" ? "" : `/${shopLocale}`}/products/${result.data.product.handle}`;
-
-        // const productItemHtml = `<div class="product-wishlist-item">
-        //                             <a href="${url}">
-        //                             <picture class="product-image img-multiply-bg">
-        //                               <img src="${result.data.product.featuredImage.url}" alt="product image">
-        //                             </picture>
-        //                             </a>
-        //                             <a href="${url}">
-        //                             <div class="ff-primary product-title">${result.data.product.title}</div>
-        //                             </a>
-        //                             <div class="ff-primary product-price">$${result.data.product.priceRange.minVariantPrice.amount}</div>
-        //                             <a href="#" class="remove" data-product-id="${result.data.product.id.replace("gid://shopify/Product/", "")}">
-        //                             <i aria-hidden="true" class="icon-x-circle"></i>
-        //                             <span class="hidden">Remove</span>
-        //                             </a>
-        //                           </div>`;
-        // popupWishlistHtml = `${popupWishlistHtml}${productItemHtml}`;
+        
       }
       const wishlistPopup = document.querySelector("#popup-wishlist");
       if (wishlistPopup && wishlistPopup.classList.contains("shown")) {
