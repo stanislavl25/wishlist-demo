@@ -1,0 +1,941 @@
+{% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
+{%- liquid
+  assign container = 'li'
+  assign placeholder_int = placeholder_int | default: 1
+  assign width_class = width_class | default: ''
+  assign sizes = sizes | default: false
+  assign slider = slider | default: false
+  assign type = type | default: 'grid'
+  assign no_lazyload = no_lazyload | default: false
+  assign enable_bulk = enable_bulk | default: false
+  assign popup = popup | default: false
+
+  if fill_images == nil
+    assign fill_images = settings.fill_product_images
+  endif
+  if quick_buy_compact == nil
+    assign quick_buy_compact = false
+  endif
+  if enable_quick_buy_drawer == nil
+    if settings.layout_productcard == 'quickshop'
+      assign enable_quick_buy_drawer = true
+    else
+      assign enable_quick_buy_drawer = false
+    endif
+  endif
+  if enable_quick_buy_desktop == nil
+    assign enable_quick_buy_desktop = true
+  endif
+  if enable_quick_buy_mobile == nil
+    assign enable_quick_buy_mobile = true
+  endif
+  if enable_quick_buy_qty_selector == nil
+    assign enable_quick_buy_qty_selector = false
+  endif
+  if enable_variant_picker == nil
+    assign enable_variant_picker = true
+  endif
+  if enable_color_picker == nil
+    assign enable_color_picker = settings.show_color_swatches
+  endif
+  if show_image == nil
+    assign show_image = true
+    assign show_labels = true
+    assign show_title = true
+    assign show_price = true
+    assign show_stock = true
+    assign show_vendor = settings.show_vendor
+    assign show_rating = settings.show_product_rating
+  endif
+  assign require_login = false
+  if settings.login_for_prices and customer == nil
+    assign require_login = true
+    assign show_price = false
+  endif
+  if layout == 'list-compact'
+    assign show_labels = false
+    assign show_stock = false
+    assign show_vendor = false
+    assign show_rating = false
+  endif
+  if layout == 'hotspot'
+    assign show_labels = false
+    assign show_image = true
+    assign container = 'li'
+    if product.variants.size > 1 or product.available == false
+      assign enable_quick_buy_drawer = true
+    endif
+  endif
+  assign current_variant = product.selected_or_first_available_variant
+  if custom_height_ratio == nil
+    assign custom_height_ratio = settings.custom_product_image_ratio
+  endif
+  assign custom_height_ratio = custom_height_ratio | divided_by: 100.0
+  assign image_width = 430
+  assign image_height = image_width | times: custom_height_ratio | round
+  assign image_width_2 = image_width | times: 1.5
+  assign image_height_2 = image_height | times: 1.5
+  if product == blank
+    assign vendor = "Vendor name"
+    assign title =  "Product title"
+    assign price =  0 | money
+  else
+    assign vendor = product.vendor
+    assign title = product.title
+    if layout == 'list-compact'
+      assign price = current_variant.price | money
+    else
+      assign price = product.price | money
+    endif
+  endif
+  assign total_stock = 0
+  for variant in product.variants
+    if variant.matched and variant.inventory_quantity > 0
+      assign total_stock = total_stock | plus: variant.inventory_quantity
+    endif
+  endfor
+  if total_stock <= 0
+    assign total_stock = current_variant.inventory_quantity
+  endif
+  if total_stock <= 0 and current_variant.inventory_management != nil and current_variant.inventory_policy == 'continue' and current_variant.available and current_variant.inventory_quantity <= 0 and settings.preorder
+    assign preorder = true
+    unless settings.show_preorder_inventory
+      assign show_stock = false
+    endunless
+  endif
+  assign static_color_picker = false
+  if settings.layout_productcard == 'variant_picker' or settings.layout_productcard == 'quickshop' or settings.layout_productcard == 'add_to_cart'
+    assign static_color_picker = true
+  elsif settings.color_swatch_behavior == 'static' and settings.layout_productcard == 'standard'
+    assign static_color_picker = true
+  endif
+  assign overlay_static = false
+  if settings.quickshop_behavior == 'static'
+    if settings.layout_productcard == 'quickshop' or settings.layout_productcard == 'add_to_cart'
+      assign overlay_static = true
+    endif
+  elsif settings.color_swatch_behavior == 'static' and settings.layout_productcard == 'standard'
+    assign overlay_static = true
+  endif
+  assign collection_page = false
+  if origin == 'collection' or origin == 'search'
+    assign collection_page = true
+  endif
+  assign quickshop = false
+  if settings.layout_productcard == 'quickshop'
+    assign quickshop = true
+  elsif settings.layout_productcard != 'standard'
+    if layout == 'list' or layout == 'grid'
+      assign quickshop = true
+    endif
+  endif
+  assign fixed_text_alignment_left = false
+  if layout == 'list'
+    assign fixed_text_alignment_left = true
+  endif
+  if settings.enable_compare and settings.compare_checkboxes_productcards != 'none'
+    if settings.compare_checkboxes_productcards == 'collection' and collection_page == false
+      assign show_compare_checkbox = false
+    elsif show_compare_checkbox != false
+      assign show_compare_checkbox = true
+    endif
+  endif
+
+  assign color_triggers = settings.color_swatch_name | newline_to_br | strip_newlines | replace: '<br />', '|' | split: '|'
+  assign color_option = false
+  if enable_color_picker
+    if settings.enable_color_swatches
+      for option in product.options_with_values
+        if color_triggers contains option.name
+          assign color_option = option
+          break
+        endif
+      endfor
+    endif
+    assign colors_size = color_option.values | size
+    if settings.color_swatches_single and colors_size < 2
+      assign color_option = false
+    endif
+  endif
+
+  assign size_triggers = settings.variant_picker_name | newline_to_br | strip_newlines | replace: '<br />', '|' | split: '|'
+  assign size_option = false
+  if settings.layout_productcard == 'variant_picker'
+    for option in product.options_with_values
+      if size_triggers contains option.name
+        assign size_option = option
+        break
+      endif
+    endfor
+  endif
+
+  assign option_match = 0
+  assign option_size = false
+
+  if settings.productcard_show_unavailable_variants
+    assign available_variants = product.variants
+  else
+    assign available_variants = product.variants | where: "available"
+  endif
+-%}
+{%- if enable_quick_buy_desktop or enable_quick_buy_mobile -%}
+  {%- liquid
+    assign product_form_class = 'f8pr form-card list-hide ' | append: settings.productcards_text_alignment
+    if settings.layout_productcard == 'variant_picker' and layout != 'list-compact'
+      assign product_form_class = product_form_class | append: ' no-border'
+    endif
+    assign product_form_id = 'quick-add-' | append: section.id | append: product.id | append: '-quick-add-form_x'
+  -%}
+  {%- capture quick_buy -%}
+    {%- if layout == 'list-compact' -%}
+      {%- form 'product', product, id: product_form_id, class: product_form_class, novalidate: 'novalidate' -%}
+        {%- assign available_variants = product.variants | where: "available" -%}
+        {%- if enable_variant_picker and available_variants.size > 1 -%}
+          <p>
+            <select name="id" id="{{ product_form_id }}-id">
+              {%- for variant in product.variants -%}
+                {%- unless variant.available -%}{% continue %}{%- endunless -%}
+                {%- liquid
+                  if variant.featured_image
+                    assign product_image = variant.featured_image
+                   else
+                    assign product_image = product.featured_image
+                  endif
+                -%}
+                <option
+                  value="{{ variant.id }}"
+                  data-variantinfo='{ {% if product_image %}"image":"{%- if fill_images -%}{{ product_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}{%- else -%}{{ product_image | image_url: height: image_height_2 }}{%- endif -%}",{% endif %}"price_old":"{%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}","price":"{{ variant.price | money }}"}'
+                  {% unless variant.available %}disabled data-class="disabled"{% endunless %}
+                  {% if variant == current_variant %}selected{% endif %}
+                >{{ variant.title }}</option>
+              {%- endfor -%}
+            </select>
+          </p>
+        {%- else -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {%- endif -%}
+        <p class="submit">
+          <button type="submit" class="circle {% if preorder %}preorder-button m0{% else %}overlay-tertiary{% endif %}{% if settings.buy_button_style == 'inv' %} inv{% endif %}">
+            {% if preorder %}{%- if layout == 'list-compact' -%}<i aria-hidden="true" class="icon-cart" aria-label="{{ settings.preorder_button_text }}"></i>{%- else -%}{{ settings.preorder_button_text }}{%- endif -%}{% else %}<i aria-hidden="true" class="icon-cart" aria-label="{{ 'product.form.add_to_cart' | t }}"></i> {{ 'product.form.add_to_cart' | t }}{% endif %}
+          </button>
+        </p>
+      {%- endform -%}
+    {%- elsif layout == 'hotspot' -%}
+      {% if product.variants.size > 1 %}
+        <p class="link-btn list-hide"><a href="{{ product.url }}" aria-label="choose options" class="overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}">{{ 'product.form.choose_options' | t }}</a></p>
+      {% else %}
+        {% if current_variant.available %}
+          {%- form 'product', product, id: product_form_id, class: product_form_class, novalidate: 'novalidate' -%}
+            <p class="submit">
+              <input type="hidden" name="id" value="{{ current_variant.id }}">
+              <button type="submit" class="{% if preorder %}preorder-button m0{% else %}overlay-tertiary{% endif %}{% if settings.buy_button_style == 'inv' %} inv{% endif %}" aria-label="{% if preorder %}{{ settings.preorder_button_text }}{% else %}{{ 'product.form.add_to_cart' | t }}{% endif %}">
+                <span>{% if preorder %}{{ settings.preorder_button_text }}{% else %}{{ 'product.form.add_to_cart' | t }}{% endif %}</span>
+              </button>
+            </p>
+          {%- endform -%}
+        {% else %}
+          <p class="link-btn{% unless collection_page %} mobile-hide{% endunless %}"><a href="{{ product.url }}" aria-label="{{ 'product.form.not_in_stock' | t }}" class="overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}">{{ 'product.form.not_in_stock' | t }}</a></p>
+        {% endif %}
+      {% endif %}
+    {% else %}
+      {% if quickshop %}
+        <p class="link-btn list-hide
+            {% unless layout == 'list' or origin == 'complementary' %}text-end{% endunless %}
+            quickshop
+            {% if layout == 'list' or layout == 'hotspot' or layout == 'grid' %}
+              {% if layout == 'grid' %}visible mobile-text-end{% endif %}
+            {% else %}
+              {% if settings.quickshop_behavior == 'static' %}visible{% endif %}
+            {% endif %}
+          ">
+          {%- if require_login -%}
+            <a href="{{ routes.account_login_url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}"  aria-label="{{ 'customer.login.login_for_prices_html' | t | strip_html }}" style="--size: 32px;"><i aria-hidden="true" class="icon-user"></i> <span class="hidden">{{ 'customer.login.login_for_prices_html' | t | strip_html }}</span></a>
+          {%- else -%}
+            <a href="{{ product.url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}" data-quickshop aria-label="{{ 'product.form.add_to_cart' | t }}" style="--size: 32px;"><i aria-hidden="true" class="icon-{% if settings.plus_icon_no_cart %}plus{% else %}cart{% endif %}"></i> <span class="hidden">{{ 'product.form.add_to_cart' | t }}</span></a>
+          {%- endif -%}
+        </p>
+      {% elsif settings.layout_productcard == 'add_to_cart' and product.id %}
+        <p class="link-btn text-end quickshop visible">
+          {%- if require_login -%}
+            <a href="{{ routes.account_login_url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}"  aria-label="{{ 'customer.login.login_for_prices_html' | t | strip_html }}" style="--size: 32px;"><i aria-hidden="true" class="icon-user"></i> <span class="hidden">{{ 'customer.login.login_for_prices_html' | t | strip_html }}</span></a>
+          {%- else -%}
+            <a href="{{ product.url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}" data-quickshop aria-label="{{ 'product.form.add_to_cart' | t }}" style="--size: 32px;"><i aria-hidden="true" class="icon-{% if settings.plus_icon_no_cart %}plus{% else %}cart{% endif %}"></i> <span class="hidden">{{ 'product.form.add_to_cart' | t }}</span></a>
+          {%- endif -%}
+        </p>
+        {%- if require_login -%}
+          <p class="link-btn{% unless collection_page %} mobile-hide{% endunless %}">
+            <a href="{{ routes.account_login_url }}" aria-label="{{ 'customer.login.login_for_prices_html' | t | strip_html }}" class="overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}">{{ 'customer.login.login_for_prices_html' | t }}</a>
+          </p>
+        {%- else -%}
+          {% if available_variants.size > 1 or preorder %}
+            {% unless collection_page %}
+              {% assign product_form_class = product_form_class | append: ' mobile-hide' %}
+            {% endunless %}
+            {%- form 'product', product, id: product_form_id, class: product_form_class, novalidate: 'novalidate' -%}
+              {%- if available_variants.size > 1 -%}
+                <fieldset>
+                  <p class="submit{% if settings.productcard_form_layout == 'rows' %} wide{% endif %}">
+                    <span class="has-select" style="--main_fz: {{ settings.product_button_fontsize }}; font-size: {{ settings.product_button_fontsize }};">
+                      <select name="id" id="{{ product_form_id }}-id">
+                        {%- for variant in product.variants -%}
+                          {% if settings.productcard_show_unavailable_variants == false and variant.available == false %}{% continue %}{% endif %}
+                          {%- liquid
+                            assign featured_media_position = variant.featured_media.position
+                            unless featured_media_position
+                              assign featured_media_position = 1
+                            endunless
+
+                            if variant.featured_image
+                              assign product_image = variant.featured_image
+                            else
+                              assign product_image = product.featured_image
+                            endif
+                          -%}
+                          <option
+                            value="{{ variant.id }}"
+                            data-variantinfo='{ {% if product_image %}"image":"{%- if fill_images -%}{{ product_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}{%- else -%}{{ product_image | image_url: height: image_height_2 }}{%- endif -%}",{% endif %}"price_old":"{%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}","price":"{{ variant.price | money }}"}'
+                            {% unless variant.available %}disabled data-class="disabled"{% endunless %}
+                            {% if variant == current_variant %}selected{% endif %}
+                            data-slide-to="{{ featured_media_position | minus: 1 }}"
+                          >{{ variant.title }}</option>
+                        {%- endfor -%}
+                      </select>
+                    </span>
+                    <button type="submit" class="no-paddings{% if preorder %} preorder-button m0{% else %} overlay-tertiary{% endif %}{% if settings.buy_button_style == 'inv' %} inv{% endif %}{% unless current_variant.available %} disabled-style{% endunless %}" aria-label="{% if preorder %}{{ settings.preorder_button_text }}{% else %}{{ 'product.form.add_to_cart' | t }}{% endif %}"{% unless current_variant.available %} disabled{% endunless %}>
+                      <span>{% if settings.cart_icon_no_text == false or settings.productcard_form_layout == 'columns'%}<i aria-hidden="true" class="icon-cart"></i>{% elsif preorder %}{{ settings.preorder_button_text }}{% elsif current_variant.available %}{{ 'product.form.add_to_cart' | t }}{% else %}{{ 'product.form.not_in_stock' | t }}{% endif %}</span>
+                    </button>
+                  </p>
+                </fieldset>
+              {%- else -%}
+                <p class="submit m0">
+                  <input type="hidden" name="id" value="{{ current_variant.id }}">
+                  <button type="submit" class="m0 {% if preorder %}preorder-button {% else %}overlay-tertiary{% endif %}{% if settings.buy_button_style == 'inv' %} inv{% endif %}" aria-label="{% if preorder %}{{ settings.preorder_button_text }}{% else %}{{ 'product.form.add_to_cart' | t }}{% endif %}">
+                    <span>{% if preorder %}{{ settings.preorder_button_text }}{% else %}{% if settings.cart_icon_no_text == false %}<i aria-hidden="true" class="icon-cart"></i>{% else %}{{ 'product.form.add_to_cart' | t }}{% endif %}{% endif %}</span>
+                  </button>
+                </p>
+              {%- endif -%}
+            {%- endform -%}
+          {% else %}
+            <p class="link-btn{% unless collection_page %} mobile-hide{% endunless %}"><a href="{{ product.url }}" aria-label="{{ 'product.form.not_in_stock' | t }}" class="overlay-tertiary disabled{% if settings.buy_button_style == 'inv' %} inv{% endif %}">{{ 'product.form.not_in_stock' | t }}</a></p>
+          {% endif %}
+        {% endif %}
+      {% elsif settings.layout_productcard == 'variant_picker' %}
+        <p class="link-btn text-end quickshop visible list-hide">
+          {%- if require_login -%}
+            <a href="{{ routes.account_login_url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}"  aria-label="{{ 'customer.login.login_for_prices_html' | t | strip_html }}" style="--size: 32px;"><i aria-hidden="true" class="icon-user"></i> <span class="hidden">{{ 'customer.login.login_for_prices_html' | t | strip_html }}</span></a>
+          {%- else -%}
+            <a href="{{ product.url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}" data-quickshop aria-label="{{ 'product.form.add_to_cart' | t }}"><i aria-hidden="true" class="icon-{% if settings.plus_icon_no_cart %}plus{% else %}cart{% endif %}"></i> <span class="hidden">{{ 'product.form.add_to_cart' | t }}</span></a>
+          {%- endif -%}
+        </p>
+
+        {% if size_option %}
+          {%- assign product_form_class = product_form_class | append: ' hidden list-hide' -%}
+          {% if size_option.values %}
+            {% comment %}Redirect to product if it has a third option or color swatch is disabled and there is a second option{% endcomment %}
+            {%- liquid
+              assign go_to_product = false
+              if color_option and product.variants[0].option3 != null
+                assign go_to_product = true
+              elsif color_option == false and product.variants[0].option2 != null
+                assign go_to_product = true
+              endif
+              if enable_color_picker
+                if settings.color_swatches_single and colors_size < 2
+                  assign go_to_product = false
+                endif
+              endif
+              if go_to_product
+                assign product_form_class = product_form_class | append: ' product-options'
+              endif
+            %}
+            {% assign product_form_class = product_form_class | append: ' mobile-hide' %}
+            {%- form 'product', product, id: product_form_id, class: product_form_class, novalidate: 'novalidate' -%}
+              <select name="id" id="id-{{ section.id }}-{{ product.id }}" data-url="{{ product.url }}" data-template="{{ section.id }}" required form="{{ product_form_id }}">
+                {%- for variant in product.variants -%}
+                  {%- liquid
+                    assign featured_media_position = variant.featured_media.position
+                    unless featured_media_position
+                      assign featured_media_position = 1
+                    endunless
+
+                    if variant.featured_image
+                      assign product_image = variant.featured_image
+                    else
+                      assign product_image = product.featured_image
+                    endif
+                  -%}
+                  {% if block.settings.show_unavailable_variants == false and variant.available == false %}{% continue %}{% endif %}
+                    <option
+                      value="{{ variant.id }}"
+                      data-variantinfo='{ {% if product_image %}"image":"{%- if fill_images -%}{{ product_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}{%- else -%}{{ product_image | image_url: height: image_height_2 }}{%- endif -%}",{% endif %}"price_old":"{%- if variant.compare_at_price > variant.price -%}{{ variant.compare_at_price | money }}{%- endif -%}","price":"{{ variant.price | money }}"}' data-options='{"id":{{ variant.id }},"options":{{ variant.options | json | escape }}}'
+                          {% unless variant.available %}disabled data-class="disabled"{% endunless %}
+                      data-slide-to="{{ featured_media_position | minus: 1 }}"
+                    >{{ variant.title }}</option>
+                {%- endfor -%}
+              </select>
+              <p class="submit m10 {% unless current_variant.available %}unavailable{% endunless %}">
+                {%- if current_variant.available -%}
+                  <button type="submit" class="overlay-tertiary{% if block.settings.button_style == 'inv' %} inv{% endif %}">{{ 'product.form.add_to_cart' | t }}</button>
+                {%- else -%}
+                  <button type="submit" class="disabled overlay-tertiary{% if block.settings.button_style == 'inv' %} inv{% endif %}">{{ 'product.form.not_in_stock' | t }}</button>
+                {%- endif -%}
+              </p>
+            {%- endform -%}
+
+            <ul class="check inline plain text-center variant-picker mobile-hide list-hide" name="id" id="{{ product_form_id }}-id">
+              {% if settings.button_label %}
+                {%- if require_login -%}
+                  <li class="wide"><a href="{{ routes.account_login_url }}">{{ 'customer.login.login_for_prices_html' | t | strip_html }}</a></li>
+                {%- else -%}
+                  <li class="wide">{{ settings.button_label }}</li>
+                {%- endif -%}
+              {% endif %}
+              {%- liquid
+                assign variants_available_arr = product.variants | map: 'available'
+                assign variants_option1_arr = product.variants | map: 'option1'
+                assign variants_option2_arr = product.variants | map: 'option2'
+                assign variants_option3_arr = product.variants | map: 'option3'
+              -%}
+              {%- for option in product.options_with_values -%}
+                {%- liquid
+                  assign is_color = false
+                  assign is_size = false
+                  if settings.enable_color_swatches and color_triggers contains option.name
+                    assign is_color = true
+                  endif
+                  if size_triggers contains option.name
+                    assign is_size = true
+                  endif
+                -%}
+                {%- for value in option.values -%}
+                  {%- liquid
+                    assign option_disabled = true
+                    for option1_name in variants_option1_arr
+                      case option.position
+                        when 1
+                          if variants_option1_arr[forloop.index0] == value and variants_available_arr[forloop.index0]
+                            assign option_disabled = false
+                            assign option_match = 0
+                          endif
+                        when 2
+                          if option1_name == product.selected_or_first_available_variant.option1 and variants_option2_arr[forloop.index0] == value and variants_available_arr[forloop.index0]
+                            assign option_disabled = false
+                            assign option_match = 1
+                          endif
+                        when 3
+                          if option1_name == product.selected_or_first_available_variant.option1 and variants_option2_arr[forloop.index0] == product.selected_or_first_available_variant.option2 and variants_option3_arr[forloop.index0] == value and variants_available_arr[forloop.index0]
+                            assign option_disabled = false
+                            assign option_match = 2
+                          endif
+                      endcase
+                    endfor
+                  -%}
+                  {% if is_size %}
+                    {% assign option_size = option_match %}
+                    <li>
+                      <input type="radio"
+                             id="option-{{ product.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}"
+                             value="{{ value | escape }}"
+                             name="options[{{ section.id }}-{{ option.name | escape }}]"
+                             title="{{ value }}"
+                             data-url="{{ product.url }}"
+                             data-template="{{ section.id }}"
+                             form="{{ form_id }}"
+                             autocomplete="off"
+                             {% if require_login %}ignore{% endif %}
+                      >
+                      <label{% if option_disabled %} class="disabled-style"{% endif %} for="option-{{ product.id }}-{{ forloop.parentloop.index0 }}-{{ forloop.index0 }}">
+                        {{ value }}
+                      </label>
+                    </li>
+                  {% elsif is_color == false %}{% comment %}third option should be done something with if it is present to make the add to cart work --> but then it should redirect{% endcomment %}
+                  {%- endif -%}
+                {%- endfor -%}
+              {% endfor %}
+            </ul>
+          {%  endif %}
+        {% endif %}
+      {% endif %}
+    {%- endif -%}
+  {%- endcapture %}
+{%- endif -%}
+
+{%- capture color_picker -%}
+  {%- if enable_color_picker -%}
+    {% if color_option %}
+      <ul class="check color list-hide{% if settings.color_swatch_shape == 'rectangle' %} rect{% endif %}" data-limit="6">
+        {% for color in color_option.values %}
+          {%- liquid
+            assign color_data_option = 0
+            assign color_variant = product.variants | where: 'option1', color | first
+            unless color_variant
+              assign color_variant = product.variants | where: 'option2', color | first
+              assign color_data_option = 1
+            endunless
+            unless color_variant
+              assign color_variant = product.variants | where: 'option3', color | first
+              assign color_data_option = 2
+            endunless
+          -%}
+          <li {% if color_variant and color_variant.featured_media %}
+            data-img="
+                  {%- if fill_images -%}
+                    {{ color_variant.featured_media | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}
+                  {%- else -%}
+                    {{ color_variant.featured_media | image_url: height: image_height_2 }}
+                  {%- endif -%}
+                  "
+          {% endif %}
+          >
+            {% if settings.layout_productcard == 'variant_picker' and size_option %}
+                {% comment %}Find match between color and size / add available sizes as data attribute{% endcomment %}
+                {% if size_option.values %}
+                  {% assign data_sizes = '' %}
+                  {% assign data_sizes_availability = '' %}
+                    {%- for option in product.variants -%}
+                      {% if option.options[color_data_option] == color %}
+                        {% assign found_size = false %}
+                        {% for size in data_sizes %}
+                          {% if size == option.options[option_size] %}
+                            {% assign found_size = true %}
+                          {% endif %}
+                        {% endfor %}
+                        {% if found_size %}{% else %}
+                          {% assign data_sizes = data_sizes | append: option.options[option_size] | append: '/' %}
+                          {% assign data_sizes_availability = data_sizes_availability | append: option.available | append: '/' %}
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                {% endif %}
+                <input type="radio"
+                     id="color-{{ product.id }}-{{ variant.id }}-{{ forloop.index0 }}"
+                     value="{{ color }}"
+                     name="options[{{ section.id }}-{{ product.id }}]"
+                     title="{{ value }}"
+                     {% if forloop.index0 == 0 %}checked{% endif %}
+                     data-url="{{ product.url }}"
+                     data-template="{{ section.id }}"
+                     form="{{ form_id }}"
+                     data-sizes="{{ data_sizes | remove_last: '/' }}"
+                     data-sizes-availability="{{ data_sizes_availability | remove_last: '/' }}"
+                >
+                <label for="color-{{ product.id }}-{{ variant.id }}-{{ forloop.index0 }}">
+                  <i aria-hidden="true"
+                     class="icon-circle swatch-custom-color-{{ color | handleize }}"
+                     style="background-color:{{ color }}"
+                  ></i>
+                </label>
+            {% else %}
+              <input type="radio" id="color-{{ product.id }}-{{ variant.id }}-{{ forloop.index }}" name="color-{{ product.id }}-{{ variant.id }}-{{ forloop.index }}"{% if forloop.index0 == 0 %} checked{% endif %}>
+              <label for="color-{{ product.id }}-{{ variant.id }}-{{ forloop.index }}">
+                <a href="{% if color_variant %}{{ color_variant.url }}{% else %}{{ product.url }}{% endif %}" aria-label="{{ color }}">
+                  <i aria-hidden="true"
+                     class="icon-circle swatch-custom-color-{{ color | handleize }}"
+                     style="background-color:{{ color }}"
+                  ></i>
+                </a>
+              </label>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {%- endif -%}
+{%- endcapture %}
+
+{%- capture variant_bulk -%}
+  {%- if enable_bulk -%}
+  {%- liquid
+    assign product_form_class = 'l4ml-form list-only'
+    if product.variants.size == 1
+      assign product_form_class = product_form_class | append: ' form-card'
+    endif
+    assign product_form_id = 'bulk-add-' | append: section.id | append: product.id
+  -%}
+  {%- form 'product', product, id: product_form_id, class: product_form_class, autocomplete: "off" -%}
+      <fieldset>
+        <legend>{{ section.settings.bulk_title }}</legend>
+        {%- if product.variants.size == 1 -%}
+          <p class="sticky">
+            {%- render 'product-deliverytime',
+                product: product,
+                current_variant: current_variant,
+                container: "span",
+                origin: 'productitem',
+                no_margin: no_margin,
+                extra_class: 'size-12'
+            -%}
+          </p>
+        {%- else -%}
+          <p class="strong m15">{{ section.settings.bulk_title }}</p>
+          <ul class="l4ml">
+            {%- for variant in product.variants -%}
+              <li class="{% unless show_price %}disabled{% endunless %}{% if forloop.index > 3 %} hidden{% endif %}">
+                {%- if variant.image and section.settings.bulk_show_variant_images -%}
+                  <figure>
+                    <picture {% if img_padding and img_vertical_position %}style="--img_padding:{{ img_padding }}%;--img_vertical_position:{{ img_vertical_position }}%;"{% endif %}><img src="{% if fill_images %}{{ variant.image | image_url: width: image_width_small, height: image_height_small, crop: 'center' }}{% else %}{{ variant.image | image_url: height: image_height_small }}{% endif %}" alt="{{ variant.title }}" width="50" height="55" loading="lazy" {% if fill_images %}class="filled"{% endif %}></picture>
+                  </figure>
+                {%- endif -%}
+                <span>
+                    <span{% if section.settings.bulk_shorten_title %} class="s1nw"{% endif %}><a href="{{ variant.url }}">{{ variant.title }}</a></span>
+                    {%- liquid
+                      if section.settings.bulk_show_deliverytime
+                        assign hide_deliverytime = false
+                      else
+                        assign hide_deliverytime = true
+                      endif
+                    -%}
+                    {%- render 'product-deliverytime',
+                      product: variant,
+                      current_variant: variant,
+                      container: "span",
+                      origin: 'productitem',
+                      no_margin: no_margin,
+                      extra_class: 'size-12',
+                      hide_deliverytime: hide_deliverytime,
+                      extra_element: '<br>'
+                    -%}
+                </span>
+                <span class="s1pr">{% if variant.compare_at_price > variant.price and show_price %}<span class="old-price">{{ variant.compare_at_price | money }}</span> {% endif %}{% if show_price %}{{ variant.price | money }}{% else %}{{ 0000 | money | money | replace: '0', '-' }}{% endif %}</span>
+                <span class="input-amount {% if settings.qty_input_controls == 'enable' %}strong{% else %}no-arrows{% endif %}">
+                    <label for="ml-{{ variant.id }}" class="hidden">{{ 'cart.product.qty' | t }}</label>
+                    <input type="number" id="ml-{{ variant.id }}" name="ml-{{ variant.id }}" value="0" placeholder="0" min="{% if variant.quantity_rule.min > 1 %}{{ variant.quantity_rule.min }}{% else %}0{% endif %}"{% if variant.quantity_rule.max %} max="{{ variant.quantity_rule.max }}"{% endif %} step="{{ variant.quantity_rule.increment }}" required{% if variant.available == false %} disabled{% endif %} data-id="{{ variant.id }}" data-price="{{ variant.price }}">
+                </span>
+              </li>
+            {%- endfor -%}
+            {%- if product.variants.size > 3 -%}
+              <li class="link-more"><a href="./" class="link-more strong"><span class="link-underline">{{ 'general.read_more.show' | t }} <span>{{ 'general.read_more.all_2' | t }}</span> <span class="hidden">{{ 'general.read_more.less' | t }}</span> {{ 'general.read_more.variants' | t }}</span></a></li>
+            {%- endif -%}
+          </ul>
+        {%- endif -%}
+        {%- if show_price -%}
+          <p class="submit m5">
+            {%- if product.variants.size == 1 -%}
+              <input name="id" value="{{ current_variant.id }}" type="hidden">
+              <span><span class="s1pr bulk-price">{% if current_variant.compare_at_price > current_variant.price and show_price %}<span class="old-price">{{ current_variant.compare_at_price | money }}</span> {% endif %}{% if show_price %}{{ current_variant.price | money }}{% else %}{{ 0000 | money | money | replace: '0', '-' }}{% endif %}</span></span>
+              <span class="input-amount {% if settings.qty_input_controls == 'enable' %}strong{% else %}no-arrows{% endif %}">
+                  <label for="quantity-{{ product_form_id }}-id" class="hidden">{{ 'cart.product.qty' | t }}</label>
+                  <input type="number" id="quantity-{{ product_form_id }}-id" name="quantity" value="{{ current_variant.quantity_rule.min }}"
+                    min="{{ current_variant.quantity_rule.min }}"
+                    {% if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny' -%}
+                      max="{{ current_variant.inventory_quantity }}"
+                    {% elsif current_variant.quantity_rule.max %}
+                      max="{{ current_variant.quantity_rule.max }}"
+                    {% endif %}
+                    {% if current_variant.quantity_rule.increment %}step="{{ current_variant.quantity_rule.increment }}"{% endif %}
+                    required
+                  >
+              </span>
+            {%- else -%}
+              <span>{{ 'cart.subtotal' | t }} <span class="s1bx rounded inline font-regular bulk-qty">0</span><br> <span class="s1pr bulk-price">{{ '0' | money }}</span></span>
+            {%- endif -%}
+            <button type="submit" class="overlay-tertiary{% if settings.button_style == 'inv' %} inv{% endif %}{% if product.variants.size > 1 %} disabled{% endif %}">{{ 'product.form.add_to_cart' | t }}</button>
+          </p>
+        {%- else -%}
+          <p class="link-btn m10" {{ block.shopify_attributes }}>
+            <a href="{{ routes.account_login_url }}" class="wide overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}">{{ 'customer.login.login_for_prices_html' | t }}</a>
+          </p>
+        {%- endif -%}
+        {%- if show_compare_checkbox -%}
+          <p class="check list-only mobile-only">
+            <input type="checkbox" id="compare-{{ section.id }}-{{ product.id }}" name="product-compare" data-handle="{{ product.handle }}" disabled>
+            <label for="compare-{{ section.id }}-{{ product.id }}"><span data-checked-hide>{{ 'product.compare.add_to_compare' | t }}</span> <span data-checked-show>{{ 'product.compare.added_to_compare' | t }}</span></label>
+          </p>
+        {%- endif -%}
+      </fieldset>
+    {%- endform -%}
+  {%- endif -%}
+{%- endcapture %}
+
+<{{ container }} class="{% unless layout == 'list-compact' %}product-card{% endunless %} {{ width_class }}{% if quick_buy %} has-form{% endif %}
+  {% unless current_variant.available %}unavailable{% endunless %}
+  {% unless layout contains 'list' or layout == 'hotspot' %}{% if settings.productcards_text_alignment == 'left' or fixed_text_alignment_left %}text-start{% elsif settings.productcards_text_alignment == 'center' %}text-center{% elsif settings.productcards_text_alignment == 'right' %}text-end{% endif %}{% endunless %}
+  {% if settings.image_behaviour != 'slider' and product.media[1] != nil %}second-img-hover{% endif %}
+  {% if settings.layout_productcard == 'add_to_cart' or settings.layout_productcard == 'variant_picker' %}update-variants dynamic-quickshop{% endif %}
+  {% if product == blank %}placeholder-product{% endif %}
+  "
+  {% if layout == 'list-compact' %}data-product-id="{{ product.id }}"{% endif %}
+  style="--ratio:{{ custom_height_ratio }};{% if layout == 'list-compact' %} --btn_size: 32px;{% endif %}{% if settings.layout_productcard == 'variant_picker' %} --check_plain_bg: var(--{{ settings.variant_color_palette }}_bg); --check_plain_fg: var(--{{ settings.variant_color_palette }}_fg); --check_plain_o: {{ settings.background_opacity | divided_by: 100.0 }};{% endif %}"
+  >
+  {%- if show_image -%}
+    <figure class="margin-15{% if overlay_static %} overlay-static{% endif %}{% if fill_images %} filled{% endif %}{% if settings.multiply_product_images == 'multiply-bg' %} has-img-multiply-bg{% endif %}" {% if img_padding and img_vertical_position %}style="--img_padding:{{ img_padding }}%;--img_vertical_position:{{ img_vertical_position }}%;"{% endif %}>
+      {% if show_labels %}{%- render 'product-labels', product: product, origin: 'productitem' -%}{% endif %}
+      {%- liquid
+        if layout == 'list-compact' and current_variant.featured_image
+          assign product_image = current_variant.featured_image
+        else
+          assign product_image = product.featured_media
+        endif
+        assign first_image = product_image
+        assign second_image = product.media[1]
+        if settings.image_behaviour == 'last_image'
+          assign second_image = product.media | last
+        endif
+        if second_image != nil and settings.image_behaviour != 'slider' and layout != 'list-compact'
+          assign show_secondary_image = true
+        endif
+      -%}
+      {%- if product != blank and first_image -%}
+        {%- if collection_page and settings.image_behaviour == 'slider' -%}
+          <picture class="{% if product.images.size > 1 and settings.image_behaviour == 'slider' %}slider{% endif %}{% if settings.multiply_product_images == 'multiply' %} img-multiply{% elsif settings.multiply_product_images == 'multiply-bg' %} img-multiply-bg{% endif %}">
+            {%- for image in product.images -%}
+              {% unless layout == 'list-compact' %}<a href="{{ product.url }}">{% endunless %}
+                <img
+                        src="{%- if fill_images -%}{{ image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}{%- else -%}{{ image | image_url: height: image_height_2 }}{%- endif -%}"
+                        {%- if sizes -%}
+                          srcset="
+                    {%- if fill_images -%}
+                      {%- render 'image-srcset', image: image, format: 'custom', image_height: custom_height_ratio, max_width: 640, crop: 'center' -%}
+                    {%- else -%}
+                      {%- render 'image-srcset', image: image, max_width: 640 -%}
+                    {%- endif -%}
+                  "
+                          sizes="{{ sizes }}"
+                        {%- else -%}
+                          srcset="
+                    {%- if fill_images -%}
+                      {{ first_image | image_url: width: image_width, height: image_height, crop: 'center' }} 1x, {{ image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }} 2x
+                    {%- else -%}
+                      {{ first_image | image_url: height: image_height }} 1x, {{ image | image_url: height: image_height_2 }} 2x
+                    {%- endif -%}
+                  "
+                        {%- endif -%}
+                        width="{{ image_width }}"
+                        height="{{ image_height }}"
+                        alt="{{ image.alt | default: product.title | escape }}"
+                        loading="{% if section.index > 2 or no_lazyload == false or forloop.first == false or section.location == 'footer' %}lazy{% else %}eager{% endif %}"
+                        data-index="{{ forloop.index }}"
+                  {% if fill_images %}class="filled"{% endif %}
+                >
+              {% unless layout == 'list-compact' %}</a>{% endunless %}
+            {%- endfor -%}
+          </picture>
+        {%- else -%}
+          {% unless layout == 'list-compact' %}<a href="{{ product.url }}">{% endunless %}
+            <picture class="{% if settings.multiply_product_images == 'multiply' %}img-multiply{% elsif settings.multiply_product_images == 'multiply-bg' %}img-multiply-bg{% endif %}">
+              <img
+                src="{%- if fill_images -%}{{ first_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}{%- else -%}{{ first_image | image_url: height: image_height_2 }}{%- endif -%}"
+                {%- if sizes -%}
+                  srcset="
+                    {%- if fill_images -%}
+                      {%- render 'image-srcset', image: first_image, format: 'custom', image_height: custom_height_ratio, max_width: 640, crop: 'center' -%}
+                    {%- else -%}
+                      {%- render 'image-srcset', image: first_image, max_width: 640 -%}
+                    {%- endif -%}
+                  "
+                  sizes="{{ sizes }}"
+                {%- else -%}
+                  srcset="
+                  {%- if fill_images -%}
+                    {{ first_image | image_url: width: image_width, height: image_height, crop: 'center' }} 1x, {{ first_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }} 2x
+                  {%- else -%}
+                    {{ first_image | image_url: height: image_height }} 1x, {{ first_image | image_url: height: image_height_2 }} 2x
+                  {%- endif -%}
+                  "
+                {%- endif -%}
+                width="{{ image_width }}"
+                height="{{ image_height }}"
+                alt="{{ first_image.alt | default: product.title | escape }}"
+                loading="{% if section.index > 2 or no_lazyload == false or forloop.first == false or section.location == 'footer' %}lazy{% else %}eager{% endif %}"
+                {% if fill_images %}class="filled"{% endif %}
+              >
+            </picture>
+            {% if show_secondary_image and settings.image_behaviour != 'slider' %}
+              <picture class="{% if settings.multiply_product_images == 'multiply' %}img-multiply{% elsif settings.multiply_product_images == 'multiply-bg' %}img-multiply-bg{% endif %}">
+                <img
+                  src="{%- if fill_images -%}{{ second_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}{%- else -%}{{ second_image | image_url: height: image_height_2 }}{%- endif -%}"
+                  {%- if sizes -%}
+                    srcset="
+                      {%- if fill_images -%}
+                        {%- render 'image-srcset', image: second_image, format: 'custom', image_height: custom_height_ratio, max_width: 640, crop: 'center' -%}
+                      {%- else -%}
+                        {%- render 'image-srcset', image: second_image, max_width: 640 -%}
+                       {%- endif -%}
+                    "
+                    sizes="{{ sizes }}"
+                  {%- else -%}
+                    srcset="
+                      {%- if fill_images -%}
+                        {{ second_image | image_url: width: image_width, height: image_height, crop: 'center' }} 1x, {{ second_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }} 2x
+                      {%- else -%}
+                        {{ second_image | image_url: height: image_height }} 1x, {{ second_image | image_url: height: image_height_2 }} 2x
+                      {%- endif -%}
+                    "
+                  {%- endif -%}
+                  width="{{ image_width }}"
+                  height="{{ image_height }}"
+                  alt="{{ second_image.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  {% if fill_images %}class="filled"{% endif %}
+                >
+              </picture>
+            {% endif %}
+          {% unless layout == 'list-compact' %}</a>{% endunless %}
+        {%- endif -%}
+      {%- elsif product.media[0].media_type == 'video' or product.media[0].media_type == 'external_video' -%}
+        {% unless layout == 'list-compact' %}<a href="{{ product.url }}">{% endunless %}
+        <picture class="{% if settings.multiply_product_images == 'multiply' %}img-multiply{% elsif settings.multiply_product_images == 'multiply-bg' %}img-multiply-bg{% endif %}">
+          <img
+            src="{{ product.media[0].preview_image | image_url: width: image_width_2, height: image_height_2 }}"
+            srcset="
+              {%- if fill_images -%}
+                {{ product.media[0].preview_image | image_url: width: image_width, height: image_height, crop: 'center' }} 1x, {{ product.media[0].preview_image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }} 2x
+              {%- else -%}
+                {{ product.media[0].preview_image | image_url: height: image_height }} 1x, {{ product.media[0].preview_image | image_url: height: image_height_2 }} 2x
+              {%- endif -%}
+            "
+            width="{{ image_width }}"
+            height="{{ image_height }}"
+            alt="{{ product.title }}"
+            loading="lazy"
+            {% if fill_images %}class="filled"{% endif %}
+          >
+        </picture>
+        {% unless layout == 'list-compact' %}</a>{% endunless %}
+      {% else %}
+        <picture class="{% if settings.multiply_product_images == 'multiply' %}img-multiply{% elsif settings.multiply_product_images == 'multiply-bg' %}img-multiply-bg{% endif %}">{{ 'product-' | append: placeholder_int | placeholder_svg_tag: 'placeholder-svg' }}</picture>
+      {%- endif -%}
+      <button class="wishlist-productcard hidden" title="Wishlist" data-wishlist-button data-product-id="{{ product.id }}"><i class="icon-heart-outline"></i></button>
+      {%- if static_color_picker == false and layout != 'hotspot' and layout != 'list' -%}
+        {{ color_picker }}
+      {%- endif -%}
+      {%- if quick_buy and layout != 'list-compact' and settings.layout_productcard != 'standard' and layout != 'list' and layout != 'hotspot' -%}
+        {{ quick_buy | replace: '-quick-add-form_x', '1' }}
+      {%- endif -%}
+    </figure>
+  {%- endif -%}
+  {% if layout == 'list-compact' %}<section>{% else %}<div>{% endif %}
+    {%- if show_title or show_vendor -%}
+      <h3{% unless show_vendor %} class="p0"{% endunless %}>
+        {%- if show_vendor and vendor != "vendor-unknown" and vendor != shop.name -%}
+          {%- liquid
+            assign vendor_handle =vendor | handleize
+            assign vendor_collection = collections[vendor_handle]
+          -%}
+          <span class="small margin-5">
+            {%- if vendor_collection != blank -%}<a href="{{ vendor_collection.url }}">{{ vendor }}</a>{%- else -%}{{ vendor | link_to_vendor }}{%- endif -%}
+          </span>
+        {%- endif -%}
+        {%- if show_title -%}
+          <a href="{{ product.url }}" class="margin-5 fw-{{ settings.product_heading_font_weight }} ff-{{ settings.product_heading_font }} text-{{ settings.product_heading_case }}{% unless layout == 'list-compact' %} fz-heading-productcard{% endunless %}">{{ title }}</a>
+        {%- endif -%}
+        {%- if layout == 'list-compact' and product.has_only_default_variant == false -%}
+          {% if enable_variant_picker == false or enable_variant_picker and available_variants.size == 1 %}
+            <span class="small size-12">
+                {{ current_variant.title }}
+            </span>
+          {%- endif -%}
+        {%- endif -%}
+      </h3>
+    {%- endif -%}
+    {%- if product.metafields.reviews.rating and show_rating -%}
+      <p class="r6rt" data-val="{{ product.metafields.reviews.rating.value }}" data-of="5">
+        <a href="{{ product.url }}">
+          {%- if product.metafields.reviews.rating_count -%}{{ product.metafields.reviews.rating_count }} <span>{{ 'product.reviews.count' | t: count: product.metafields.reviews.rating_count }}</span>{%- endif -%}
+        </a>
+      </p>
+    {%- endif -%}
+    {%- if show_stock -%}
+      {%- render 'product-deliverytime',
+              product: product,
+              show_stock: false,
+              current_variant: current_variant,
+              container: "p",
+              extra_class: 'list-hide',
+              origin: 'productitem'
+      -%}
+    {%- endif -%}
+    {%- if show_price -%}
+      <p class="price list-hide">
+        {%- if product.price_varies and settings.show_price_varies and layout != 'list-compact' -%}
+          {%- liquid
+            assign price_min = product.price_min | money
+            assign price_max = product.price_max | money
+          -%}
+          {{ price_min }}<span class="price-varies">&nbsp;- {{ price_max }}</span>
+        {%- else -%}
+          {%- if current_variant.compare_at_price > current_variant.price -%}
+            {%- liquid
+              if settings.sale_label_price == 'percentage'
+                assign discount = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price
+                if discount > 1
+                  assign discount = discount | round
+                else
+                  assign discount = discount | round: 1
+                endif
+                if discount == 100 and product.price != 0
+                  assign discount = discount | minus: 0.1
+                endif
+              elsif settings.sale_label_price == 'amount'
+                assign discount = current_variant.compare_at_price | minus: current_variant.price | money
+              endif
+            %}
+            <span class="old-price font-regular">{{ current_variant.compare_at_price | money }}</span>{% if settings.sale_label_price != 'none' and layout != 'list-compact' %} <span class="s1bx rounded inline strong size-12 overlay-sale">{% if settings.sale_label_price == 'percentage' %}&nbsp;-{{ discount }}%{% elsif settings.sale_label_price == 'amount' %}&nbsp;-{{ discount }}{% endif %}</span>{%- endif -%}{% if layout != 'list-compact' and settings.sale_label_price != 'none' %}<br>{%- endif -%}
+          {%- endif -%}
+          <span class="size-{{ settings.product_prices_fontsize }}">{{ price }}</span>
+        {%- endif -%}
+        {%- if settings.productcards_show_tax -%}{%- if cart.taxes_included -%}<span class="size-12 font-regular">{{ 'product.including_tax' | t }}{%- else -%}{{ 'product.excluding_tax' | t }}</span>{%- endif -%}{%- endif -%}
+        {%- if current_variant.unit_price_measurement -%}
+          {%- capture unit_price_base_unit -%}
+            {%- if current_variant.available and current_variant.unit_price_measurement -%}
+              {%- if current_variant.unit_price_measurement.reference_value != 1 -%}
+                {{- current_variant.unit_price_measurement.reference_value -}}
+              {%- endif -%}
+              {{ current_variant.unit_price_measurement.reference_unit }}
+            {%- endif -%}
+          {%- endcapture -%}
+          <span class="size-12 font-regular">{{ 'product.unit_price_label' | t }}{{ current_variant.unit_price | money }}&nbsp;{{ 'product.unit_price_separator' | t }} {{ unit_price_base_unit }}</span>
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+    {%- if settings.product_short_description != 'none' and type == 'both' and section.settings.show_product_description != false %}
+      {%- liquid
+        if settings.product_short_description == 'custom'
+          assign product_short_description_namespace = settings.product_short_description_text | split: '.' | first
+          assign product_short_description_key = settings.product_short_description_text | split: '.' | last
+          assign short_description = product.metafields[product_short_description_namespace][product_short_description_key] | metafield_tag
+        else
+          assign short_description = product.description | strip_html | truncatewords: 40
+        endif
+      -%}
+      {% if short_description != empty and short_description != blank -%}
+        <div class="info m0">
+          <p>{{ short_description }}</p>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+    {%- if color_picker and static_color_picker -%}
+      {{ color_picker }}
+    {% elsif color_picker and layout == 'list' %}
+      {{ color_picker }}
+    {%- endif -%}
+    {%- if show_compare_checkbox -%}
+      <p class="check list-hide">
+        <input type="checkbox" id="compare-{{ section.id }}-{{ product.id }}" name="product-compare" data-handle="{{ product.handle }}" disabled>
+        <label for="compare-{{ section.id }}-{{ product.id }}"><span data-checked-hide>{{ 'product.compare.add_to_compare' | t }}</span> <span data-checked-show>{{ 'product.compare.added_to_compare' | t }}</span></label>
+      </p>
+      <p class="check list-only mobile-hide">
+        <input type="checkbox" id="compare-{{ section.id }}-{{ product.id }}" name="product-compare" data-handle="{{ product.handle }}" disabled>
+        <label for="compare-{{ section.id }}-{{ product.id }}"><span data-checked-hide>{{ 'product.compare.add_to_compare' | t }}</span> <span data-checked-show>{{ 'product.compare.added_to_compare' | t }}</span></label>
+      </p>
+    {%- endif -%}
+
+    {% if layout == 'list-compact' %}<section>{% elsif settings.layout_productcard != 'variant_picker' and layout != 'hotspot' %}<div class="static">{% endif %}
+
+    {% if quick_buy %}
+      {% if layout == 'hotspot' or layout == 'list' or layout == 'grid' %}
+        {{ quick_buy | replace: '-quick-add-form_x', '1' }}
+      {% endif %}
+    {% endif %}
+
+    {%- if quick_buy and layout == 'list-compact' -%}
+      <footer>
+        {{ quick_buy | replace: '-quick-add-form_x', '2' }}
+      </footer>
+    {%- endif -%}
+  {% if layout == 'list-compact' %}</section>{% elsif settings.layout_productcard != 'variant_picker' and layout != 'hotspot' %}</div>{% endif %}
+  {% if layout == 'list-compact' %}</section>{% else %}</div>{% endif %}
+  {%- if type == 'both' and enable_bulk and layout != 'hotspot' -%}
+    {{ variant_bulk }}
+  {%- endif -%}
+</{{ container }}>

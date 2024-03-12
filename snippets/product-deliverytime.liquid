@@ -1,0 +1,110 @@
+{%- liquid
+  assign current_variant = current_variant | default: product.selected_or_first_available_variant
+  assign no_margin = no_margin | default: false
+  assign extra_class = extra_class | default: false
+  assign container = container | default: "p"
+  assign shopify_attributes = shopify_attributes | default: false
+  assign stock = settings.product_stock
+  assign show_stock = true
+  if stock == 'none'
+    assign show_stock = false
+  endif
+  assign hide_deliverytime = hide_deliverytime | default: false
+  assign total_stock = 0
+  assign bold = true
+  if origin == 'productpage'
+
+    if stock == false
+      assign list_layout = true
+    endif
+  elsif origin == 'productitem'
+    for variant in product.variants
+      if variant.matched and variant.inventory_quantity > 0
+        assign total_stock = total_stock | plus: variant.inventory_quantity
+      endif
+    endfor
+  endif
+  if total_stock == 0
+    assign total_stock = current_variant.inventory_quantity
+  endif
+-%}
+{%- if settings.product_deliverytime_in_stock or settings.product_deliverytime_not_in_stock -%}
+  {%- liquid
+    if hide_deliverytime
+      assign deliverytime_in_stock = empty
+      assign deliverytime_not_in_stock = empty
+    else
+      assign deliverytime_in_stock_metafields_namespace = settings.product_deliverytime_in_stock | split: '.' | first
+      assign deliverytime_in_stock_metafields_key = settings.product_deliverytime_in_stock | split: '.' | last
+      assign deliverytime_not_in_stock_metafields_namespace = settings.product_deliverytime_not_in_stock | split: '.' | first
+      assign deliverytime_not_in_stock_metafields_key = settings.product_deliverytime_not_in_stock | split: '.' | last
+      assign deliverytime_in_stock = product.metafields[deliverytime_in_stock_metafields_namespace][deliverytime_in_stock_metafields_key]
+      assign deliverytime_not_in_stock = product.metafields[deliverytime_not_in_stock_metafields_namespace][deliverytime_not_in_stock_metafields_key]
+      unless deliverytime_in_stock
+        assign deliverytime_in_stock = settings.default_product_deliverytime_in_stock
+      endunless
+      unless deliverytime_not_in_stock
+        assign deliverytime_not_in_stock = settings.default_product_deliverytime_not_in_stock
+      endunless
+
+      assign deliverytime_info_metafields_namespace = settings.product_deliverytime_info | split: '.' | first
+      assign deliverytime_info_metafields_key = settings.product_deliverytime_info | split: '.' | last
+      assign deliverytime_info = product.metafields[deliverytime_info_metafields_namespace][deliverytime_info_metafields_key]
+      unless deliverytime_info
+        assign deliverytime_info = settings.default_product_deliverytime_info
+      endunless
+    endif
+
+    if current_variant.inventory_management == 'shopify'
+      assign inventory_tracking = true
+      if show_stock
+        assign show = true
+      elsif total_stock > 0 and deliverytime_in_stock != empty
+        assign show = true
+      elsif total_stock <= 0 and deliverytime_not_in_stock != empty
+        assign show = true
+      endif
+    elsif deliverytime_in_stock != empty and settings.show_deliverytime_always
+      assign show = true
+      assign inventory_tracking = false
+      assign show_stock = false
+    endif
+    if total_stock > settings.show_product_stock_qty and settings.show_product_stock_always == false and stock == 'available_stock'
+      assign show_stock = false
+    endif
+  -%}
+{%- endif -%}
+{%- if show -%}
+  {%- if extra_element -%}{{ extra_element }}{%- endif -%}
+  {%- if total_stock > 0 or inventory_tracking == false -%}
+    <{{ container }} class="stock {% if list_layout %}l4ch{% endif %} {{ extra_class }} {% if no_margin %}m0{% endif %}" {% if shopify_attributes %}{{ shopify_attributes }}{% endif %}>
+      <span class="{% if show_stock and deliverytime_in_stock == empty and bold %}overlay-valid strong{% endif %}">
+        {% if show_stock %}
+          {% if stock == 'available_stock' %}
+            {{ 'product.form.in_stock_amount' | t: amount: total_stock }}
+          {% elsif stock == 'stock' %}
+            {{ 'product.form.in_stock' | t }}
+          {% endif %}
+        {% endif %}
+        {%- if deliverytime_in_stock != empty -%}
+          <span class="overlay-valid{% if bold %} strong{% endif %}">
+            {{ deliverytime_in_stock }}
+          </span>
+        {%- endif -%}
+      </span>
+      {%- if deliverytime_in_stock != empty and deliverytime_info != empty -%}&nbsp;<span class="s1tt{% if origin == 'productitem' %} mobile-hide{% endif %}"><span>{{ deliverytime_info | replace: '</p><p>', '<br>' | remove: '<p>' | remove: '</p>' | remove: '<h1>' | remove: '</h1>' | remove: '<h2>' | remove: '</h2>' | remove: '<h3>' | remove: '</h3>' | remove: '<h4>' | remove: '</h4>' | remove: '<h5>' | remove: '</h5>' | remove: '<h6>' | remove: '</h6>' }}</span></span>{%- endif -%}
+    </{{ container }}>
+  {%- elsif inventory_tracking -%}
+    <{{ container }} class="stock {{ extra_class }} {% if no_margin %}m0{% endif %}" {% if shopify_attributes %}{{ shopify_attributes }}{% endif %}>
+      <span class="{% if show_stock and deliverytime_not_in_stock == empty and bold %}overlay-error strong{% endif %}">
+        {% if show_stock %}{{ 'product.form.not_in_stock' | t }} {% endif %}
+        {%- if deliverytime_not_in_stock != empty -%}
+          <span class="overlay-error{% if bold %} strong{% endif %}">
+            {{ deliverytime_not_in_stock }}
+          </span>
+        {%- endif -%}
+      </span>
+      {%- if deliverytime_not_in_stock != empty and deliverytime_info != empty -%}&nbsp;<span class="s1tt{% if origin == 'productitem' %} mobile-hide{% endif %}"><span>{{ deliverytime_info | replace: '</p><p>', '<br>' | remove: '<p>' | remove: '</p>' | remove: '<h1>' | remove: '</h1>' | remove: '<h2>' | remove: '</h2>' | remove: '<h3>' | remove: '</h3>' | remove: '<h4>' | remove: '</h4>' | remove: '<h5>' | remove: '</h5>' | remove: '<h6>' | remove: '</h6>' }}</span></span>{%- endif -%}
+    </{{ container }}>
+  {%- endif -%}
+{%- endif -%}

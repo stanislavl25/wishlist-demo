@@ -1,0 +1,79 @@
+{
+  "sections": {
+    "breadcrumbs": {
+      "type": "breadcrumbs",
+      "settings": {
+        "hide_desktop": false,
+        "text_alignment": "start",
+        "hide_mobile": true,
+        "enable_share_button": false
+      }
+    },
+    "main-page": {
+      "type": "main-page",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {
+            "title_size": "h2"
+          }
+        },
+        "content": {
+          "type": "content",
+          "settings": {
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "content"
+      ],
+      "settings": {
+        "max_width": 980,
+        "content_alignment": "center",
+        "text_alignment": "start",
+        "spacing_desktop": 50,
+        "spacing_mobile": 30
+      }
+    },
+    "main-collection": {
+      "type": "main-collection",
+      "disabled": true,
+      "settings": {
+        "pagination_qty": 18,
+        "pagination_type": "pages",
+        "show_amount_of_products_in_collection": true,
+        "products_per_row": 3,
+        "secondary_products_per_row": 4,
+        "enable_variants": false,
+        "bulk_title": "Select quantities",
+        "bulk_show_variant_images": true,
+        "bulk_shorten_title": false,
+        "custom_product_image_ratio": 100,
+        "fill_images": false,
+        "images_padding": 0,
+        "images_vertical_position": 0,
+        "show_collection_image": false,
+        "enable_filters": true,
+        "enable_menu": false,
+        "enable_collections": true,
+        "filters_menu_alignment": "left",
+        "filters_layout": "drawer",
+        "filter_menu": "main-menu",
+        "collections_menu": [
+
+        ],
+        "filter_sticky": true,
+        "filters_show_more_limit": 7,
+        "enable_custom_filters_font_size": false,
+        "filters_font_size": "14px",
+        "fix_zindex": 1
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs",
+    "main-page",
+    "main-collection"
+  ]
+}

@@ -1,0 +1,65 @@
+<link media="screen" rel="stylesheet" href="{{ 'async-popups.css' | asset_url }}">
+
+{% assign customerSavedWishlist = '' %}
+{% if customer %}
+  {% assign customerSavedWishlist =  %}
+  {% for item in customer.metafields.custom.wishlist.value %}
+    {% assign productId = id | replace: 'gid://shopify/Product/', '' %}
+    {% assign customerSavedWishlist = customerSavedWishlist | append: item.id %}
+    {% unless forloop.last %}
+      {% assign customerSavedWishlist = customerSavedWishlist | append: ',' %}
+    {% endunless %}
+  {% endfor %}
+{% endif %}
+
+
+
+
+<div class="wishlist-embed" data-customer-id="{{ customer.id }}" data-customer-name="{{ customer.first_name }}" data-lang-primary="{{ request.locale.primary }}" data-shop-locale="{{ request.locale.iso_code }}" data-shop-domain="{{ shop.domain }}" data-customer-wishlist="{{ customerSavedWishlist }}">
+  <div id="popup-wishlist" class="popup-a popup-wishlist" style="--ppd: 20px;">
+      <div class="box-outer">
+        <div class="box-inner">
+          <div class="box-inset">
+            <h2>Wishlist Items</h2>
+            <div class="empty-state">No products are added!</div>
+            <div class="products-wrapper">
+
+            </div>
+            {% if customer %}
+              <div class="save-into-account">
+                <div class="action-feedback" style="opacity: 0;">
+                </div>
+                <button class="btn-wishlist-save">
+                  <span class="text">Save Into Account</span>
+                  <span class="loader"></span>
+                </button>
+
+                <button class="btn-wishlist-share">
+                  Share Wishlist
+                </button>
+              </div>
+            {% endif %}
+            <a class="close" href="./">Close</a>
+          </div>
+        </div>
+        <a class="close" href="./">Close</a>
+      </div>
+  </div>
+  <div id="shared-wishlist" class="popup-a popup-wishlist" style="--ppd: 20px;">
+      <div class="box-outer">
+        <div class="box-inner">
+          <div class="box-inset">
+            <h2><span class="shared-wishlist-title"></span></h2>
+            <div class="products-wrapper">
+
+            </div>
+            <a class="close" href="./">Close</a>
+          </div>
+        </div>
+        <a class="close" href="./">Close</a>
+      </div>
+
+
+  </div>
+</div>
+<script defer src="{{ 'wishlist.js' | asset_url }}"></script>

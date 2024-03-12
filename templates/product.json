@@ -1,0 +1,334 @@
+{
+  "sections": {
+    "breadcrumbs": {
+      "type": "breadcrumbs",
+      "settings": {
+        "hide_desktop": false,
+        "text_alignment": "start",
+        "hide_mobile": false,
+        "enable_share_button": true
+      }
+    },
+    "main-product": {
+      "type": "main-product",
+      "blocks": {
+        "c7259cb9-7235-4028-b6df-3a68077fed80": {
+          "type": "title",
+          "settings": {
+            "layout": "title-right",
+            "title_size": "h3",
+            "show_product_rating": true,
+            "show_vendor_brand": false,
+            "show_vendor_name": true,
+            "layout_mobile": "title-top",
+            "mobile_title_size": "h3"
+          }
+        },
+        "62e4278e-411c-4296-b34e-aafa845a39a3": {
+          "type": "short_description",
+          "settings": {
+            "show_read_more": true
+          }
+        },
+        "inventory": {
+          "type": "inventory",
+          "settings": {
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_tax": false,
+            "font_size": 18
+          }
+        },
+        "c300d32f-398c-41a9-b22b-d5c9f40ed345": {
+          "type": "spacer",
+          "settings": {
+            "height": 0,
+            "height_mobile": 20
+          }
+        },
+        "ee5e9f1c-a80a-4244-950f-03806a509775": {
+          "type": "shipping_timer",
+          "settings": {
+          }
+        },
+        "variant_selection": {
+          "type": "variant_selection",
+          "settings": {
+            "selection_type": "buttons",
+            "options": true,
+            "button_options": "Color",
+            "dropdown_options": "",
+            "show_variant_images": true,
+            "show_selected_variant_images": false,
+            "show_unavailable_variants": true,
+            "show_single_options": true,
+            "show_single_options_title": true,
+            "enable_selling_plans": true,
+            "size_name": "Size",
+            "sizechart_alignment": "left",
+            "sizechart_title": "Size chart",
+            "sizechart_text": "",
+            "sizechart_page": "",
+            "sizechart_image_width": 460,
+            "sizechart_liquid": "",
+            "sizechart_html": ""
+          }
+        },
+        "pickup": {
+          "type": "pickup",
+          "settings": {
+          }
+        },
+        "buy_button": {
+          "type": "buy_button",
+          "settings": {
+            "button_style": "plain",
+            "show_amount_selection": false,
+            "show_dynamic_buybutton": true,
+            "button_style_dynamic_buybutton": "inv",
+            "preorder_label": "",
+            "preorder_label_color_palette": "light_2",
+            "preorder_show_dynamic_buybutton": false,
+            "show_gift_card_recipient": false
+          }
+        },
+        "2e2c7560-5a06-448a-9b31-71c22f9fb2db": {
+          "type": "quote",
+          "settings": {
+            "title": "Larger quantity required?",
+            "title_font": "primary",
+            "title_size": "h5",
+            "enable_custom_text_styling": false,
+            "title_color_palette": "black",
+            "title_weight": "700",
+            "link_text": "Request a quote",
+            "button_color_palette": "accent",
+            "button_style": "fill",
+            "wide": false,
+            "show_link": true,
+            "popup_title": "Request a quote",
+            "popup_title_font": "primary",
+            "popup_title_size": "h2",
+            "popup_enable_custom_text_styling": false,
+            "popup_title_color_palette": "black",
+            "popup_title_weight": "700",
+            "text": "<p>We will answer within 48 hours.<\/p>",
+            "enable_custom_font_styling": false,
+            "font_size": "16px",
+            "show_placeholder": false
+          }
+        },
+        "90724a70-740a-4cc9-984c-764e1d76a5bd": {
+          "type": "codes",
+          "disabled": true,
+          "settings": {
+            "show_sku": true,
+            "show_barcode": true
+          }
+        },
+        "80e67d89-9369-4ddb-8111-2aa1c36fb500": {
+          "type": "usp",
+          "settings": {
+            "usp": "<p>Tell a unique detail about this product<\/p>"
+          }
+        },
+        "ce57c15f-9a2f-4731-8dfe-6ed8eefa9924": {
+          "type": "usp",
+          "settings": {
+            "usp": "<p>Tell a unique detail about this product<\/p>"
+          }
+        },
+        "27010477-c512-4a60-a0fc-0f37ece278d0": {
+          "type": "usp",
+          "settings": {
+            "usp": "<p>Tell a unique detail about this product<\/p>"
+          }
+        },
+        "63d592e0-eab5-44c8-b0f6-2ad9bfd843db": {
+          "type": "manual_docs",
+          "settings": {
+            "title_size": "h5",
+            "title": "Manuals & documents",
+            "show_icon": true,
+            "header_image_width": 25,
+            "link_text": "Manual",
+            "link_url": ""
+          }
+        },
+        "15f8c6bf-194e-4ce1-880e-49cac07e91cb": {
+          "type": "spacer",
+          "settings": {
+            "height": 20,
+            "height_mobile": 20
+          }
+        },
+        "5540ceca-dac1-401a-a976-437e5785d85b": {
+          "type": "content",
+          "settings": {
+            "layout": "accordion",
+            "collapse": true,
+            "title_size": "h2",
+            "title": "Content",
+            "icon": "none",
+            "header_image_width": 25,
+            "text": "<p>Give customers more details about this product<\/p>",
+            "page": "",
+            "image_width": 465,
+            "liquid": "",
+            "html": "",
+            "show_contact_form": false
+          }
+        },
+        "23734815-edd1-4fbb-ba6e-3e9123a71566": {
+          "type": "content",
+          "settings": {
+            "layout": "accordion",
+            "collapse": true,
+            "title_size": "h2",
+            "title": "Content",
+            "icon": "none",
+            "header_image_width": 25,
+            "text": "<p>Give customers more details about this product<\/p>",
+            "page": "",
+            "image_width": 465,
+            "liquid": "",
+            "html": "",
+            "show_contact_form": false
+          }
+        },
+        "01039a59-bb8f-4d7b-9f31-bcf3f61ff976": {
+          "type": "share_buttons",
+          "settings": {
+            "share_whatsapp": true,
+            "share_facebook": true,
+            "share_twitter": true,
+            "share_pinterest": true,
+            "share_messenger": true,
+            "share_email": true
+          }
+        }
+      },
+      "block_order": [
+        "c7259cb9-7235-4028-b6df-3a68077fed80",
+        "62e4278e-411c-4296-b34e-aafa845a39a3",
+        "inventory",
+        "price",
+        "c300d32f-398c-41a9-b22b-d5c9f40ed345",
+        "ee5e9f1c-a80a-4244-950f-03806a509775",
+        "variant_selection",
+        "pickup",
+        "buy_button",
+        "2e2c7560-5a06-448a-9b31-71c22f9fb2db",
+        "90724a70-740a-4cc9-984c-764e1d76a5bd",
+        "80e67d89-9369-4ddb-8111-2aa1c36fb500",
+        "ce57c15f-9a2f-4731-8dfe-6ed8eefa9924",
+        "27010477-c512-4a60-a0fc-0f37ece278d0",
+        "63d592e0-eab5-44c8-b0f6-2ad9bfd843db",
+        "15f8c6bf-194e-4ce1-880e-49cac07e91cb",
+        "5540ceca-dac1-401a-a976-437e5785d85b",
+        "23734815-edd1-4fbb-ba6e-3e9123a71566",
+        "01039a59-bb8f-4d7b-9f31-bcf3f61ff976"
+      ],
+      "settings": {
+        "media_layout": "slider",
+        "images_grid_spacing": 8,
+        "custom_product_image_ratio": 100,
+        "fill_images": false,
+        "images_padding": 0,
+        "images_vertical_position": 0,
+        "show_thumbs_desktop": true,
+        "show_thumbs_mobile": false,
+        "thumbs_layout": "aside",
+        "img_info": "",
+        "img_info_color_palette": "black",
+        "enable_custom_font_size": true,
+        "font_size": "14px",
+        "show_product_description": true,
+        "description_title_size": "h3",
+        "description_title_size_for_content": false,
+        "product_description_enable_read_more": false,
+        "pros_cons_title_size": "h3",
+        "pros": "",
+        "cons": "",
+        "specs_title_size": "h3",
+        "specifications": "",
+        "product_description_mobile_collapse": true,
+        "mobile_tabs_title_size": "h5",
+        "multiply_bg_mobile": true
+      }
+    },
+    "fba97795-cd0a-43bb-b23d-6d65a7ee795f": {
+      "type": "section-spacer",
+      "settings": {
+        "height": 30,
+        "height_mobile": 20
+      }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "recommended_products_qty": 6,
+        "number_of_items": 4,
+        "text_alignment": "start",
+        "title": "You may also like",
+        "title_font": "primary",
+        "title_size": "h3",
+        "enable_custom_text_styling": false,
+        "title_color_palette": "black",
+        "title_weight": "700",
+        "spacing_desktop": 50,
+        "spacing_mobile": 30,
+        "mobile_collapse": false
+      }
+    },
+    "reviews": {
+      "type": "product-reviews",
+      "disabled": true,
+      "settings": {
+        "text_alignment": "start",
+        "title": "Reviews",
+        "title_font": "primary",
+        "title_size": "h3",
+        "enable_custom_text_styling": false,
+        "title_color_palette": "black",
+        "title_weight": "700",
+        "spacing_desktop": 50,
+        "spacing_mobile": 30,
+        "mobile_collapse": false
+      }
+    },
+    "recently-viewed": {
+      "type": "section-recently-viewed-products",
+      "settings": {
+        "number_of_items": 6,
+        "image_ratio": 100,
+        "show_in_circle": false,
+        "fill_images": false,
+        "text_alignment": "left",
+        "title": "Recently viewed products",
+        "title_font": "primary",
+        "title_size": "h3",
+        "enable_custom_text_styling": false,
+        "title_color_palette": "black",
+        "title_weight": "700",
+        "content_alignment": "start",
+        "show_title": true,
+        "show_price": true,
+        "spacing_desktop": 50,
+        "spacing_mobile": 30,
+        "fix_zindex": 0
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs",
+    "main-product",
+    "fba97795-cd0a-43bb-b23d-6d65a7ee795f",
+    "recommendations",
+    "reviews",
+    "recently-viewed"
+  ]
+}

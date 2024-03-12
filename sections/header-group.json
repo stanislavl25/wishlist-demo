@@ -1,0 +1,201 @@
+{
+  "type": "header",
+  "name": "t:static_sections.header.name",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-1": {
+          "type": "text",
+          "settings": {
+            "text": "Shout out your big announcement here!"
+          }
+        }
+      },
+      "block_order": [
+        "announcement-1"
+      ],
+      "settings": {
+        "color_palette": "dark_gradient",
+        "height": "s",
+        "font_size": "14px",
+        "enable_kinetic_text": false,
+        "kinetic_space_between_text": 100,
+        "kinetic_text_speed": "slow",
+        "kinetic_text_dots": true,
+        "enable_slider_arrows": false,
+        "enable_slider_autoplay": true,
+        "slider_autoplay_seconds": 3
+      }
+    },
+    "header": {
+      "type": "header",
+      "blocks": {
+        "header-block-usp-1": {
+          "type": "usp",
+          "settings": {
+            "usp": "<p>Give your customers more details about your online store<\/p>"
+          }
+        },
+        "header-block-usp-2": {
+          "type": "usp",
+          "settings": {
+            "usp": "<p>Give your customers more details about your online store<\/p>"
+          }
+        },
+        "389714c7-7aae-4332-b8fe-9bf28b57ab30": {
+          "type": "promo_banners",
+          "settings": {
+            "menu_item": "",
+            "height": "size-l",
+            "enable_custom_height": false,
+            "custom_height": 300,
+            "image_zoom": false,
+            "show_content_below": false,
+            "layout": "columns",
+            "enable_banner_1": true,
+            "overlay_opacity_1": 20,
+            "color_palette_1": "black",
+            "button_color_palette_1": "black",
+            "text_position_1": "text-center",
+            "title_1": "Image banner",
+            "title_font_1": "primary",
+            "title_size_1": "h2",
+            "enable_custom_text_styling_1": false,
+            "title_color_palette_1": "black",
+            "title_weight_1": "700",
+            "text_1": "<p>Give customers details about the banner image(s)<\/p>",
+            "enable_custom_font_styling_1": false,
+            "font_size_1": "16px",
+            "link_text_1": "",
+            "link_url_1": "",
+            "show_link_1": false,
+            "enable_banner_2": true,
+            "overlay_opacity_2": 10,
+            "color_palette_2": "black",
+            "button_color_palette_2": "black",
+            "text_position_2": "text-center",
+            "title_2": "Image banner",
+            "title_font_2": "primary",
+            "title_size_2": "h2",
+            "enable_custom_text_styling_2": false,
+            "title_color_palette_2": "black",
+            "title_weight_2": "700",
+            "text_2": "<p>Give customers details about the banner image(s)<\/p>",
+            "enable_custom_font_styling_2": false,
+            "font_size_2": "16px",
+            "link_text_2": "",
+            "link_url_2": "",
+            "show_link_2": false,
+            "layout_mobile": "rows",
+            "mobile_height": "size-s"
+          }
+        },
+        "7dddf38b-6754-4abc-9408-92e29748bc72": {
+          "type": "promo_collection_list",
+          "settings": {
+            "menu_item": "",
+            "collections": [
+
+            ],
+            "custom_image_ratio": 100,
+            "show_in_circle": false,
+            "fill_images": true,
+            "layout": "slider",
+            "number_of_items": 4,
+            "text_alignment": "start",
+            "title": "Collection list",
+            "title_font": "primary",
+            "title_size": "h3",
+            "link_text": "View all",
+            "link_url": "shopify:\/\/collections",
+            "button_color_palette": "black",
+            "show_link": false,
+            "show_collection_titles": true,
+            "collection_title_position": "center",
+            "collection_title_size": "p",
+            "mobile_layout": "slider"
+          }
+        }
+      },
+      "block_order": [
+        "header-block-usp-1",
+        "header-block-usp-2",
+        "389714c7-7aae-4332-b8fe-9bf28b57ab30",
+        "7dddf38b-6754-4abc-9408-92e29748bc72"
+      ],
+      "settings": {
+        "layout": "layout_5",
+        "width": 1600,
+        "header_height": "69px|55px",
+        "header_border_opacity": 10,
+        "header_border_width": "wide",
+        "enable_transparent_header": true,
+        "enable_background_transparent_header_on_hover": true,
+        "top_bar_color": "light",
+        "header_color": "white",
+        "search_color": "white",
+        "menubar_color": "light",
+        "show_top_bar": false,
+        "top_bar_font_size": "13px",
+        "navbar_menu_item_text": "Customer service",
+        "navbar_menu_item_icon": "headphones",
+        "navbar_menu_item_link": "",
+        "enable_usp_slider": false,
+        "enable_usp_slider_arrows": true,
+        "enable_usp_slider_autoplay": true,
+        "usp_slider_autoplay_seconds": 3,
+        "logo_width": 100,
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "searchbar_font_size": "13px",
+        "searchbar_height": 50,
+        "searchbar_width": 390,
+        "enable_sticky_header": true,
+        "sticky": "sticky-header",
+        "cart_icon": "cart-bag|e963",
+        "cart_icon_color": "accent",
+        "show_cart_total": true,
+        "menubar_menu": "main-menu",
+        "menubar_height": "55px",
+        "menu_layout": "mega",
+        "show_dropdown_images": true,
+        "show_dropdown_images_subs": true,
+        "show_dropdown_images_autofill": true,
+        "show_dropdown_images_rounded": false,
+        "menubar_alignment": "left",
+        "main_menu_items_clickable": true,
+        "menu_show_chevrons": false,
+        "menubar_caps": false,
+        "sale_highlight": true,
+        "sale_highlight_item": "Sale",
+        "menu_font": "primary",
+        "menu_font_weight": "700",
+        "menu_font_size": 14,
+        "menu_letter_spacing": 0,
+        "menu_items_limit": 5,
+        "main_menu_show_lines": true,
+        "menu_subs_font": "secondary",
+        "enable_menu_subs_font_size": true,
+        "menu_subs_font_size": 14,
+        "menu_subs_font_weight": "400",
+        "extra_image_width": 100,
+        "extra_image_link": "",
+        "enable_button": true,
+        "button_text": "Dealer login",
+        "button_url": "",
+        "button_color_palette": "accent",
+        "button_style": "plain",
+        "disable_online_store": false,
+        "layout_mobile": "logo_left",
+        "logo_width_mobile": 95,
+        "search_compact_mobile": true,
+        "menu_font_size_mobile": 15
+      }
+    }
+  },
+  "order": [
+    "announcement",
+    "header"
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "sections": {
+    "fecc591c-a8e2-4029-ad82-99855d39b2d9": {
+      "type": "section-static",
+      "settings": {
+        "width": "wide",
+        "transparent": true,
+        "layout": "layout_10",
+        "custom_height": 36,
+        "color_palette": "light_2",
+        "background_overlay_opacity": 100,
+        "fill_image_1": true,
+        "image_1_overlay_opacity": 0,
+        "fill_image_2": true,
+        "image_2_overlay_opacity": 0,
+        "fill_image_3": true,
+        "image_3_overlay_opacity": 0,
+        "video_1_overlay_opacity": 0,
+        "subtitle": "",
+        "subtitle_font": "primary",
+        "subtitle_size": "h4",
+        "subtitle_margin": "medium",
+        "title": "This is the static section",
+        "title_font": "primary",
+        "title_size": "custom",
+        "text": "<p>Share information and details<\/p>",
+        "font_size": "14px",
+        "link_text": "Button",
+        "link_url": "\/",
+        "button_color_palette": "accent",
+        "button_style": "fill",
+        "show_link": false,
+        "slideshow_mobile_height": "size-s",
+        "spacing_desktop": 50,
+        "spacing_mobile": 30,
+        "fix_zindex": 0
+      }
+    },
+    "dd5916f0-3250-499e-a522-e9db030f75a3": {
+      "type": "section-spacer",
+      "settings": {
+        "height": -30,
+        "height_mobile": 20
+      }
+    },
+    "breadcrumbs": {
+      "type": "breadcrumbs",
+      "settings": {
+        "hide_desktop": false,
+        "text_alignment": "start",
+        "hide_mobile": false,
+        "enable_share_button": false
+      }
+    },
+    "f18b305b-0c4b-4971-a7a6-168829d38580": {
+      "type": "section-spacer",
+      "settings": {
+        "height": 40,
+        "height_mobile": 20
+      }
+    },
+    "16534818921d9da639": {
+      "type": "section-faq",
+      "blocks": {
+        "1653481892aca601d3-0": {
+          "type": "text",
+          "settings": {
+            "faq_question": "Question 1",
+            "icon": "none",
+            "header_image_width": 25,
+            "faq_answer": "<p>Answer to question 1<\/p>",
+            "page": "",
+            "image_width": 465,
+            "liquid": "",
+            "html": "",
+            "show_contact_form": false
+          }
+        },
+        "1653481892aca601d3-1": {
+          "type": "text",
+          "settings": {
+            "faq_question": "Question 2",
+            "icon": "none",
+            "header_image_width": 25,
+            "faq_answer": "<p>Answer to question 2<\/p>",
+            "page": "",
+            "image_width": 465,
+            "liquid": "",
+            "html": "",
+            "show_contact_form": false
+          }
+        },
+        "1653481892aca601d3-2": {
+          "type": "text",
+          "settings": {
+            "faq_question": "Question 3",
+            "icon": "none",
+            "header_image_width": 25,
+            "faq_answer": "<p>Answer to question 3<\/p>",
+            "page": "",
+            "image_width": 465,
+            "liquid": "",
+            "html": "",
+            "show_contact_form": false
+          }
+        }
+      },
+      "block_order": [
+        "1653481892aca601d3-0",
+        "1653481892aca601d3-1",
+        "1653481892aca601d3-2"
+      ],
+      "settings": {
+        "alignment": "left",
+        "compact": true,
+        "title": "Frequently asked questions",
+        "title_font": "primary",
+        "title_size": "h3",
+        "enable_custom_text_styling": false,
+        "title_color_palette": "black",
+        "title_weight": "700",
+        "spacing_desktop": 50,
+        "spacing_mobile": 30,
+        "fix_zindex": 0
+      }
+    },
+    "main-page": {
+      "type": "main-page",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {
+            "title_size": "h4"
+          }
+        },
+        "content": {
+          "type": "content",
+          "settings": {
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "content"
+      ],
+      "disabled": true,
+      "settings": {
+        "max_width": 980,
+        "content_alignment": "start",
+        "text_alignment": "start",
+        "spacing_desktop": 50,
+        "spacing_mobile": 30
+      }
+    }
+  },
+  "order": [
+    "fecc591c-a8e2-4029-ad82-99855d39b2d9",
+    "dd5916f0-3250-499e-a522-e9db030f75a3",
+    "breadcrumbs",
+    "f18b305b-0c4b-4971-a7a6-168829d38580",
+    "16534818921d9da639",
+    "main-page"
+  ]
+}

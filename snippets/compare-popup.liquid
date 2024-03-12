@@ -1,0 +1,55 @@
+{%- liquid
+    assign show_price = true
+    if settings.login_for_prices and customer == nil
+        assign show_price = false
+    endif
+-%}
+<article id="popup-compare" class="popup-a popup-compare" data-title="product-compare" style="--ppd: 20px;">
+    <{{ settings.compare_popup_title_size }}>{{ settings.compare_popup_title }} (<span class="compare-amount">0</span>)</{{ settings.compare_popup_title_size }}>
+    <ul class="check inline">
+        <li>
+            <input type="checkbox" id="product-compare-differences" name="product-compare-differences">
+            <label for="product-compare-differences">{{ 'product.compare.only_show_the_differences' | t }}</label>
+        </li>
+    </ul>
+    <div class="table-wrapper">
+        <table class="table-compare">
+            <caption>{{ settings.compare_popup_title }}</caption>
+            <tbody>
+                <tr data-info="image">
+                    <th>{{ 'product.compare.image' | t }}</th>
+                </tr>
+                {%- if settings.compare_enable_price and show_price -%}
+                    <tr data-info="price">
+                        <th>{{ 'product.compare.price' | t }}</th>
+                    </tr>
+                {%- endif -%}
+                {%- if settings.compare_enable_vendor -%}
+                    <tr data-info="vendor">
+                        <th>{{ 'product.compare.vendor' | t }}</th>
+                    </tr>
+                {%- endif -%}
+                {%- if settings.compare_enable_type -%}
+                    <tr data-info="type">
+                        <th>{{ 'product.compare.product_type' | t }}</th>
+                    </tr>
+                {%- endif -%}
+                {%- if settings.compare_enable_tags -%}
+                    <tr data-info="tags">
+                        <th>{{ 'product.compare.tags' | t }}</th>
+                    </tr>
+                {%- endif -%}
+                {%- if settings.compare_enable_short_description -%}
+                    <tr data-info="description">
+                        <th>{{ 'product.compare.description' | t }}</th>
+                    </tr>
+                {%- endif -%}
+                {%- if settings.compare_enable_availability -%}
+                    <tr data-info="deliverytime">
+                        <th>{{ 'product.compare.available' | t }}</th>
+                    </tr>
+                {%- endif -%}
+            </tbody>
+        </table>
+    </div>
+</article>

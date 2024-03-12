@@ -1,0 +1,84 @@
+{
+  "sections": {
+    "breadcrumbs": {
+      "type": "breadcrumbs",
+      "settings": {
+        "hide_desktop": false,
+        "text_alignment": "start",
+        "hide_mobile": false,
+        "enable_share_button": false
+      }
+    },
+    "d8c76ce0-70db-4e67-803d-cac1a2f9581b": {
+      "type": "section-slideshow",
+      "blocks": {
+        "template--21863798210841__d8c76ce0-70db-4e67-803d-cac1a2f9581b-slide-1": {
+          "type": "slide",
+          "settings": {
+            "layout": "background",
+            "image_width": 50,
+            "overlay_opacity": 0,
+            "color_palette": "light_gradient",
+            "text_position": "align-center text-center",
+            "content_width": 1280,
+            "title": "Image banner",
+            "title_font": "primary",
+            "title_size": "h2",
+            "enable_custom_text_styling": false,
+            "title_color_palette": "black",
+            "title_weight": "700",
+            "text": "<p>Highlight a new collection and share details about products related to this image<\/p>",
+            "enable_custom_font_styling": false,
+            "font_size": "16px",
+            "first_link_text": "Button",
+            "first_link_url": "\/",
+            "first_button_color_palette": "accent",
+            "first_button_styling": "fill",
+            "first_show_link": false,
+            "second_link_text": "Button",
+            "second_link_url": "",
+            "second_button_color_palette": "accent",
+            "second_button_styling": "fill",
+            "second_show_link": false
+          }
+        }
+      },
+      "block_order": [
+        "template--21863798210841__d8c76ce0-70db-4e67-803d-cac1a2f9581b-slide-1"
+      ],
+      "settings": {
+        "width": "wide",
+        "height": "m",
+        "enable_custom_height": false,
+        "custom_height": 300,
+        "autoplay": false,
+        "autoplay_seconds": 3,
+        "enable_controls": false,
+        "height_mobile": "m",
+        "spacing_desktop": 50,
+        "spacing_mobile": 30,
+        "fix_zindex": 0
+      }
+    },
+    "main-blog": {
+      "type": "main-blog",
+      "settings": {
+        "text_alignment": "left",
+        "title_size": "h2",
+        "title": "",
+        "pagination_qty": 12,
+        "show_image": true,
+        "show_date": true,
+        "show_author": true,
+        "show_excerpt": true,
+        "button_color_palette_post": "accent",
+        "show_link_post": true
+      }
+    }
+  },
+  "order": [
+    "breadcrumbs",
+    "d8c76ce0-70db-4e67-803d-cac1a2f9581b",
+    "main-blog"
+  ]
+}

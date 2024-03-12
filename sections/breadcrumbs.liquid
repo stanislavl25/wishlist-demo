@@ -1,0 +1,49 @@
+{%- render 'breadcrumbs', hide_desktop: section.settings.hide_desktop, text_alignment: section.settings.text_alignment, hide_mobile: section.settings.hide_mobile, enable_share_button: section.settings.enable_share_button %}
+
+{% schema %}
+{
+  "name": "t:static_sections.breadcrumbs.name",
+  "class": "shopify-section-breadcrumbs",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_desktop",
+      "label": "t:static_sections.breadcrumbs.settings.hide_desktop.label",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:static_sections.breadcrumbs.settings.text_alignment.label",
+      "options": [
+        {
+          "value": "start",
+          "label": "t:static_sections.breadcrumbs.settings.text_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:static_sections.breadcrumbs.settings.text_alignment.options__2.label"
+        }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "header",
+      "content": "t:static_sections.breadcrumbs.settings.mobile.header"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mobile",
+      "label": "t:static_sections.breadcrumbs.settings.mobile.hide_mobile.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_share_button",
+      "label": "t:static_sections.breadcrumbs.settings.mobile.enable_share_button.label",
+      "info": "t:static_sections.breadcrumbs.settings.mobile.enable_share_button.info",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

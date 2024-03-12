@@ -1,0 +1,14 @@
+<div class="m6cp {% if settings.compare_button_position == 'left' %}align-start{% endif %} inactive">
+    <header>
+        <p class="link-btn button-palette-{{ settings.compare_button_color_palette }}"><a href="./" role="button">{{ 'product.compare.compare' | t }} <span class="font-regular">&nbsp;<span class="compare-amount">0</span>&nbsp;/&nbsp;3</span> <i aria-hidden="true" class="icon-chevron-up"></i></a></p>
+    </header>
+    <div class="loading-container hidden">
+        <p class="link-btn text-center button-palette-{{ settings.compare_button_color_palette }}"><a href="./" class="inline loading">Loading</a></p>
+    </div>
+    <div class="products-container">
+        <ul class="l4cl box hidden"></ul>
+    </div>
+    <footer>
+        <p class="link-btn button-palette-{{ settings.compare_button_color_palette }}"><a href="./" data-popup="product-compare" class="disabled">{{ 'product.compare.start_compare' | t }}</a></p>
+    </footer>
+</div>

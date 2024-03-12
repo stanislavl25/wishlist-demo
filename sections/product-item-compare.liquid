@@ -1,0 +1,298 @@
+{%- liquid
+    assign current_variant = product.selected_or_first_available_variant
+    assign available_variants = product.variants | where: "available"
+    assign preorder = false
+    if current_variant.inventory_management != nil and current_variant.inventory_policy == 'continue' and current_variant.available and current_variant.inventory_quantity <= 0 and settings.preorder
+        assign preorder = true
+    endif
+    assign image = product.featured_image
+    assign custom_height_ratio = settings.custom_product_image_ratio
+    assign custom_height_ratio = custom_height_ratio | divided_by: 100.0
+    assign image_width = 430
+    assign image_height = image_width | times: custom_height_ratio | round
+    assign image_width_2 = image_width | times: 1.5
+    assign image_height_2 = image_height | times: 1.5
+    assign require_login = false
+    assign show_price = true
+    if settings.login_for_prices and customer == nil
+        assign require_login = true
+        assign show_price = false
+    endif
+    assign product_form_class = 'form-card visible align-stretch'
+    assign product_form_id = 'quick-add-compare-' | append: product.id
+-%}
+
+{% capture picture %}
+    <picture class="{% if settings.multiply_product_images == 'multiply' %}img-multiply{% elsif settings.multiply_product_images == 'multiply-bg' %}img-multiply-bg{% endif %}">
+        {%- if image -%}
+            <img
+                src="{%- if settings.fill_product_images -%}{{ image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }}{%- else -%}{{ image | image_url: height: image_height_2 }}{%- endif -%}"
+                srcset="
+                  {%- if settings.fill_product_images -%}
+                    {{ image | image_url: width: image_width, height: image_height, crop: 'center' }} 1x, {{ image | image_url: width: image_width_2, height: image_height_2, crop: 'center' }} 2x
+                  {%- else -%}
+                    {{ image | image_url: height: image_height }} 1x, {{ image | image_url: height: image_height_2 }} 2x
+                  {%- endif -%}
+                "
+                width="{{ image_width }}"
+                height="{{ image_height }}"
+                alt="{{ image.alt | default: product.title | escape }}"
+                loading="eager"
+            {% if settings.fill_product_images %}class="filled"{% endif %}
+            >
+        {%- else -%}
+            {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+        {%- endif -%}
+    </picture>
+{% endcapture %}
+
+{% capture price %}
+    {%- if product.price_varies and settings.show_price_varies -%}
+        {%- liquid
+            assign price_min = product.price_min | money
+            assign price_max = product.price_max | money
+        -%}
+        {{ price_min }}<span class="price-varies">&nbsp;- {{ price_max }}</span>
+    {%- else -%}
+        {%- if current_variant.compare_at_price > current_variant.price -%}
+            <span class="old-price">{{ current_variant.compare_at_price | money }}</span>
+        {%- endif -%}
+        {{ current_variant.price | money }}
+    {%- endif -%}
+{% endcapture %}
+
+{% comment %} Product content for the 'compare button' {% endcomment %}
+<ul class="l4cl box">
+    <li data-handle="{{ product.handle }}">
+        <figure>
+            <a href="{{ product.ul }}">
+                {{ picture }}
+            </a>
+        </figure>
+        <div>
+            <h3><a href="{{ product.ul }}">{{ product.title }} </a></h3>
+            {%- if show_price -%}<p class="price s1pr">{{ price }}</p>{%- endif -%}
+        </div>
+        <a href="./" class="remove product-compare-remove" role="button" data-handle="{{ product.handle }}"><i aria-hidden="true" class="icon-x-circle"></i> <span class="hidden">{{ 'general.accessibility.remove' | t }}</span></a>
+    </li>
+</ul>
+
+{% comment %} Product content for the 'compare popup' {% endcomment %}
+<table>
+    <td data-info="image" data-handle="{{ product.handle }}">
+        <ul class="l4cl w100 mobile-scroll">
+            <li class="has-form">
+                <figure class="margin-10{% if settings.fill_product_images %} cover{% endif %}">
+                    {{ picture }}
+                    {%- if available_variants.size == 1 and require_login == false -%}
+                        {%- form 'product', product, id: product_form_id, class: product_form_class, novalidate: 'novalidate' -%}
+                            <fieldset>
+                                <input type="hidden" name="id" value="{{ current_variant.id }}">
+                                <p class="link-btn visible text-end">
+                                    <button type="submit" class="circle {% if preorder %}preorder-button{% else %}overlay-tertiary{% endif %}{% if settings.buy_button_style == 'inv' %} inv{% endif %}" style="--size: 32px;">
+                                        <i aria-hidden="true" class="icon-{% if settings.plus_icon_no_cart %}plus{% else %}cart{% endif %}" aria-label="{{ 'product.form.add_to_cart' | t }}"></i> <span class="hidden">{{ 'product.form.add_to_cart' | t }}</span>
+                                    </button>
+                                </p>
+                            </fieldset>
+                        {%- endform -%}
+                    {%- else -%}
+                        <p class="link-btn visible text-end">
+                            {%- if require_login -%}
+                                <a href="{{ routes.account_login_url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}" aria-label="{{ 'customer.login.login_for_prices_html' | t | strip_html }}" style="--size: 32px;"><i aria-hidden="true" class="icon-user"></i> <span class="hidden">{{ 'customer.login.login_for_prices_html' | t | strip_html }}</span></a>
+                            {%- else -%}
+                                <a href="{{ product.url }}" class="circle overlay-tertiary{% if settings.buy_button_style == 'inv' %} inv{% endif %}" aria-label="{{ 'product.form.add_to_cart' | t }}" style="--size: 32px;"><i aria-hidden="true" class="icon-{% if settings.plus_icon_no_cart %}plus{% else %}cart{% endif %}"></i> <span class="hidden">{{ 'product.form.add_to_cart' | t }}</span></a>
+                            {%- endif -%}
+                        </p>
+                    {%- endif -%}
+                    <a href="./" class="remove product-compare-remove" role="button" data-handle="{{ product.handle }}"><i aria-hidden="true" class="icon-x-circle"></i> <span class="hidden">{{ 'general.accessibility.remove' | t }}</span></a>
+                </figure>
+                <div>
+                    <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+                </div>
+            </li>
+        </ul>
+    </td>
+    {%- if settings.compare_enable_price and show_price -%}
+        <td data-info="price" data-handle="{{ product.handle }}">
+            <span class="s1pr">{{ price }}</span>
+        </td>
+    {%- endif -%}
+    {%- if settings.compare_enable_vendor -%}
+        <td data-info="vendor" data-handle="{{ product.handle }}">
+            {%- if product.vendor != "vendor-unknown" and product.vendor != shop.name -%}{{ product.vendor }}{%- endif -%}
+        </td>
+    {%- endif -%}
+    {%- if settings.compare_enable_type -%}
+        <td data-info="type" data-handle="{{ product.handle }}">
+            {{- product.type -}}
+        </td>
+    {%- endif -%}
+    {%- if settings.compare_enable_tags -%}
+        <td data-info="tags" data-handle="{{ product.handle }}">
+            {%- for tag in product.tags -%}{{ tag }}{% unless forloop.last %}, {% endunless %}{%- endfor -%}
+        </td>
+    {%- endif -%}
+    {%- if settings.compare_enable_short_description -%}
+        <td data-info="description" data-handle="{{ product.handle }}">
+            {%- if settings.product_short_description != 'none' -%}
+                {%- liquid
+                    if settings.product_short_description == 'custom'
+                        assign product_short_description_namespace = settings.product_short_description_text | split: '.' | first
+                        assign product_short_description_key = settings.product_short_description_text | split: '.' | last
+                        assign short_description = product.metafields[product_short_description_namespace][product_short_description_key]
+                    else
+                        assign short_description = product.description | strip_html | truncatewords: 20
+                    endif
+                -%}
+                {%- if short_description != empty and short_description != blank -%}
+                    {{ short_description }}
+                {%- endif -%}
+            {%- endif -%}
+        </td>
+    {%- endif -%}
+    {%- if settings.compare_enable_availability -%}
+        <td data-info="deliverytime" data-handle="{{ product.handle }}">
+            {%- render 'product-deliverytime',
+                product: product,
+                current_variant: current_variant,
+                container: "span",
+                no_margin: true,
+                hide_deliverytime: true
+            -%}
+        </td>
+    {%- endif -%}
+    {%- if settings.compare_enable_options and product.has_only_default_variant == false -%}
+        {%- for option in product.options_with_values -%}
+           {%- liquid
+               assign is_color = false
+               assign color_triggers = settings.color_swatch_name | newline_to_br | strip_newlines | replace: '<br />', ',' | split: ','
+               if settings.enable_color_swatches and color_triggers contains option.name
+                   assign is_color = true
+               endif
+           -%}
+            <td data-info="{{ option.name | handleize }}" data-option-name="{{ option.name }}" data-handle="{{ product.handle }}">
+                {%- if is_color -%}
+                    <ul class="check color{% if settings.color_swatch_shape == 'rectangle' %} rect{% endif %}">
+                        {%- for value in option.values -%}
+                            {%- liquid
+                                assign color_variant = product.variants | where: 'option1', value | first
+                                unless color_variant
+                                    assign color_variant = product.variants | where: 'option2', value | first
+                                endunless
+                                unless color_variant
+                                    assign color_variant = product.variants | where: 'option3', value | first
+                                endunless
+                            -%}
+                            <li>
+                                <input type="radio" id="{{ product.handle }}-{{ forloop.parentloop.index }}-{{ forloop.index }}" name="{{ product.handle }}-{{ forloop.parentloop.index }}">
+                                <label for="{{ product.handle }}-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+                                    <a href="{% if color_variant %}{{ color_variant.url }}{% else %}{{ product.url }}{% endif %}"><i aria-hidden="true" class="icon-circle swatch-custom-color-{{ value | handleize }}" style="background-color: {{ value | split: ' ' | last }};"></i></a>
+                                    <span>{{ value }}</span>
+                                </label>
+                            </li>
+                        {%- endfor -%}
+                    </ul>
+                {%- else -%}
+                    {%- for value in option.values -%}
+                        {{ value }}{%- unless forloop.last %}, {% endunless -%}
+                    {%- endfor -%}
+                {%- endif -%}
+            </td>
+        {%- endfor -%}
+    {%- endif -%}
+    {%- if settings.compare_enable_custom -%}
+        {%- assign custom_data = settings.compare_custom_metafields | newline_to_br | strip_newlines | replace: '<br />', ',' | split: ',' -%}
+        {%- for data in custom_data -%}
+            {%- liquid
+                assign name = data | split: ':' | first
+                assign namespace_and_key = data | split: ':' | last | strip
+                assign namespace = namespace_and_key | split: '.' | first
+                assign key = namespace_and_key | split: '.' | last
+                assign metafield = product.metafields[namespace][key]
+            -%}
+            {%- if metafield.value -%}
+                {%- if metafield.type contains 'single_line_text_field' and metafield.list? -%}
+                    {% assign single_list = '' %}
+                    {% for value in metafield.value %}
+                        {%- liquid
+                            assign split_item = value | split: ':'
+                            if split_item.size > 1
+                                assign item_name = split_item | first | strip
+                            else
+                                assign item_name = name
+                            endif
+                            assign item_value = split_item | last | strip
+                        -%}
+                        {%- if split_item.size > 1 -%}
+                            <td data-info="spec-{{ item_name | handleize }}" data-option-name="{{ item_name }}" data-handle="{{ product.handle }}">
+                                {{ item_value }}
+                            </td>
+                        {%- else -%}
+                            {% assign single_list = single_list | append: value | append: '|' %}
+                        {%- endif -%}
+                    {%- endfor -%}
+                    {% assign single_list = single_list | split: '|' %}
+                    {% if single_list.size > 0 %}
+                        <td data-info="{{ name | handleize }}" data-option-name="{{ name }}" data-handle="{{ product.handle }}">
+                            {% for single_list_item in single_list %}
+                                {{ single_list_item }}{%- unless forloop.last %}, {% endunless -%}
+                            {%- endfor -%}
+                        </td>
+                    {% endif %}
+                {%- else -%}
+                    <td data-info="{{ name | handleize }}" data-option-name="{{ name }}" data-handle="{{ product.handle }}">
+                        {%- if metafield.type contains 'color' -%}
+                            <ul class="check color{% if settings.color_swatch_shape == 'rectangle' %} rect{% endif %}">
+                                {%- if metafield.list? -%}
+                                    {%- for value in metafield.value -%}
+                                        {%- liquid
+                                            assign color_variant = product.variants | where: 'option1', value | first
+                                            unless color_variant
+                                                assign color_variant = product.variants | where: 'option2', value | first
+                                            endunless
+                                            unless color_variant
+                                                assign color_variant = product.variants | where: 'option3', value | first
+                                            endunless
+                                        -%}
+                                        <li>
+                                            <input type="radio" id="{{ product.handle }}-{{ forloop.parentloop.index }}-{{ forloop.index }}" name="{{ product.handle }}-{{ forloop.parentloop.index }}">
+                                            <label for="{{ product.handle }}-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+                                                <a href="{% if color_variant %}{{ color_variant.url }}{% else %}{{ product.url }}{% endif %}"><i aria-hidden="true" class="icon-circle" style="background-color: {{ value }};"></i></a>
+                                                <span>{{ value }}</span>
+                                            </label>
+                                        </li>
+                                    {%- endfor -%}
+                                {%- else -%}
+                                    {%- liquid
+                                        assign color_variant = product.variants | where: 'option1', metafield.value | first
+                                        unless color_variant
+                                            assign color_variant = product.variants | where: 'option2', metafield.value | first
+                                        endunless
+                                        unless color_variant
+                                            assign color_variant = product.variants | where: 'option3', metafield.value | first
+                                        endunless
+                                    -%}
+                                    <li>
+                                        <input type="radio" id="{{ product.handle }}-{{ forloop.parentloop.index }}-{{ forloop.index }}" name="{{ product.handle }}-{{ forloop.parentloop.index }}">
+                                        <label for="{{ product.handle }}-{{ forloop.parentloop.index }}-{{ forloop.index }}">
+                                            <a href="{% if color_variant %}{{ color_variant.url }}{% else %}{{ product.url }}{% endif %}"><i aria-hidden="true" class="icon-circle" style="background-color: {{ metafield.value }};"></i></a>
+                                            <span>{{ metafield.value }}</span>
+                                        </label>
+                                    </li>
+                                {%- endif -%}
+                            </ul>
+                        {%- else -%}
+                            {%- if metafield.list? -%}
+                                {% for value in metafield.value %}
+                                    {{ value }}{%- unless forloop.last %}, {% endunless -%}
+                                {%- endfor -%}
+                            {%- else -%}
+                                {{ metafield | metafield_tag }}
+                            {%- endif -%}
+                        {%- endif -%}
+                    </td>
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor -%}
+    {%- endif -%}
+</table>

@@ -1,0 +1,281 @@
+{%- if section.blocks.size > 0 -%}
+  <div class="shopify-section-announcement-bar{% if section.settings.enable_kinetic_text %} m6kn ff-{{ section.settings.font }} {{ section.settings.kinetic_text_speed }}{% if section.settings.kinetic_text_dots %} dot{% endif %}{% else %}{% if section.blocks.size > 1 and section.settings.enable_slider_arrows == false %} no-nav{% endif %}{% endif %}"{% if section.blocks.size > 1 and section.settings.enable_slider_autoplay %} data-autoplay={{ section.settings.slider_autoplay_seconds | times: 1000 }}{% endif %} style="font-size:{{ section.settings.font_size }};{% if section.settings.enable_kinetic_text %}--dist:{{ section.settings.kinetic_text_distance }}px;{% endif %}">
+    {% if section.settings.enable_kinetic_text %}
+      <ul>
+        {%- for block in section.blocks -%}
+          {%- if block.settings.text != empty -%}
+            <li class="size-{{ section.settings.height }}" style="--dist: {{ section.settings.kinetic_space_between_text }}px">
+              {%- assign image_height = block.settings.image_height -%}
+              {% if block.settings.image %}
+                {%- assign image_height_2 = block.settings.image_height | times: 2 -%}
+                <div class="cols cols-mobile">
+                  <span>
+                    <img
+                      src="{{ block.settings.image | image_url: height: image_height }}"
+                      srcset="{{ block.settings.image | image_url: height: image_height }} 1x,{{ block.settings.image | image_url: height: image_height_2 }} 2x"
+                      height="{{ image_height }}"
+                      width="50"
+                      style="height:{{ image_height }}px!important; width: auto!important;"
+                      alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                      loading="{% if section.index > 1 or forloop.first == false or section.location == 'footer' %}lazy{% else %}eager{% endif %}"
+                      class="no-border"
+                    >
+                  </span>
+              {% endif %}
+              <span>{{ block.settings.text }}</span>
+              {% if block.settings.image %}
+                </div>
+              {% endif %}
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    {% else %}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.text != empty -%}
+          <p class="text-center size-{{ section.settings.height }}">
+            {%- assign image_height = block.settings.image_height -%}
+            {% if block.settings.image %}
+              {%- assign image_height_2 = block.settings.image_height | times: 2 -%}
+              <span class="cols cols-mobile">
+                <span>
+                  <img
+                    src="{{ block.settings.image | image_url: height: image_height }}"
+                    srcset="{{ block.settings.image | image_url: height: image_height }} 1x,{{ block.settings.image | image_url: height: image_height_2 }} 2x"
+                    height="{{ image_height }}"
+                    width="50"
+                    style="height:{{ image_height }}px!important; width: auto!important;"
+                    alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                    loading="{% if section.index > 1 or forloop.first == false or section.location == 'footer' %}lazy{% else %}eager{% endif %}"
+                    class="no-border"
+                  >
+                </span>
+            {% endif %}
+            <span>{{ block.settings.text }}</span>
+            {% if block.settings.image %}
+              </span>
+            {% endif %}
+          </p>
+        {%- endif -%}
+      {%- endfor -%}
+    {% endif %}
+  </div>
+  <style>
+    :root {
+      --custom_alert_bg: var(--{{ section.settings.color_palette }}_bg);
+      --custom_alert_fg: var(--{{ section.settings.color_palette | remove: '_gradient' }}_fg);
+    }
+  </style>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:static_sections.announcement_bar.name",
+  "class": "shopify-section-announcement-bar-container",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:static_sections.announcement_bar.settings.paragraph"
+    },
+    {
+      "type": "select",
+      "id": "color_palette",
+      "label": "t:global.color_palette.label",
+      "options": [
+        {
+          "value": "white",
+          "label": "t:global.color_palette.white.label"
+        },
+        {
+          "value": "black",
+          "label": "t:global.color_palette.black.label"
+        },
+        {
+          "value": "light",
+          "label": "t:global.color_palette.light.label"
+        },
+        {
+          "value": "dark",
+          "label": "t:global.color_palette.dark.label"
+        },
+        {
+          "value": "accent",
+          "label": "t:global.color_palette.accent.label"
+        },
+        {
+          "value": "light_2",
+          "label": "t:global.color_palette.light_2.label"
+        },
+        {
+          "value": "light_gradient",
+          "label": "t:global.color_palette.light_gradient.label"
+        },
+        {
+          "value": "dark_gradient",
+          "label": "t:global.color_palette.dark_gradient.label"
+        }
+      ],
+      "default": "light_2"
+    },
+    {
+      "id": "height",
+      "type": "select",
+      "label": "t:static_sections.announcement_bar.settings.height.label",
+      "options": [
+        {
+          "label": "t:static_sections.announcement_bar.settings.height.options__1.label",
+          "value": "s"
+        },
+        {
+          "label": "t:static_sections.announcement_bar.settings.height.options__2.label",
+          "value": "m"
+        },
+        {
+          "label": "t:static_sections.announcement_bar.settings.height.options__3.label",
+          "value": "l"
+        }
+      ],
+      "default": "s"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:static_sections.announcement_bar.settings.font_size.label",
+      "options": [
+        {
+          "value": "13px",
+          "label": "t:static_sections.announcement_bar.settings.font_size.options__1.label"
+        },
+        {
+          "value": "14px",
+          "label": "t:static_sections.announcement_bar.settings.font_size.options__2.label"
+        },
+        {
+          "value": "16px",
+          "label": "t:static_sections.announcement_bar.settings.font_size.options__3.label"
+        },
+        {
+          "value": "18px",
+          "label": "t:static_sections.announcement_bar.settings.font_size.options__4.label"
+        }
+      ],
+      "default": "14px"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "t:global.typography.font.label",
+      "options": [
+        {
+          "value": "primary",
+          "label": "t:global.typography.font.primary.label"
+        },
+        {
+          "value": "secondary",
+          "label": "t:global.typography.font.secondary.label"
+        }
+      ],
+      "default": "secondary"
+    },
+    {
+      "type": "header",
+      "content": "t:static_sections.announcement_bar.settings.kinetic_text.header"
+    },
+    {
+      "id": "enable_kinetic_text",
+      "type": "checkbox",
+      "label": "t:static_sections.announcement_bar.settings.kinetic_text.enable_kinetic_text.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "kinetic_space_between_text",
+      "label": "t:static_sections.announcement_bar.settings.kinetic_text.kinetic_space_between_text.label",
+      "min": 20,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "kinetic_text_speed",
+      "label": "t:static_sections.announcement_bar.settings.kinetic_text.kinetic_text_speed.label",
+      "options": [
+        {
+          "value": "slow",
+          "label": "t:static_sections.announcement_bar.settings.kinetic_text.kinetic_text_speed.options__1.label"
+        },
+        {
+          "value": "fast",
+          "label": "t:static_sections.announcement_bar.settings.kinetic_text.kinetic_text_speed.options__2.label"
+        }
+      ],
+      "default": "slow"
+    },
+    {
+      "id": "kinetic_text_dots",
+      "type": "checkbox",
+      "label": "t:static_sections.announcement_bar.settings.kinetic_text.kinetic_text_dots.label",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:static_sections.announcement_bar.settings.slider.paragraph"
+    },
+    {
+      "id": "enable_slider_arrows",
+      "type": "checkbox",
+      "label": "t:static_sections.announcement_bar.settings.slider.enable_slider_arrows.label",
+      "default": true
+    },
+    {
+      "id": "enable_slider_autoplay",
+      "type": "checkbox",
+      "label": "t:static_sections.announcement_bar.settings.slider.enable_slider_autoplay.label"
+    },
+    {
+      "id": "slider_autoplay_seconds",
+      "type": "range",
+      "label": "t:static_sections.announcement_bar.settings.slider.slider_autoplay_seconds.label",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 3
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "t:static_sections.announcement_bar.blocks.text.name",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "t:static_sections.announcement_bar.blocks.text.settings.text.label",
+          "default": {
+            "en": "Shout out your big announcement here!",
+            "nl": "Beschrijf je grote aankondiging hier!"
+          }
+        },
+        {
+          "id": "image",
+          "type": "image_picker",
+          "label": "t:static_sections.announcement_bar.blocks.text.settings.image.label"
+        },
+        {
+          "type": "range",
+          "id": "image_height",
+          "label": "t:static_sections.announcement_bar.blocks.text.settings.image_height.label",
+          "min": 5,
+          "max": 80,
+          "step": 5,
+          "unit": "px",
+          "default": 55
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
