@@ -1,4 +1,10 @@
 {
+  "wishlist":{
+    "popup":{
+      "save_success":"Successfully saved wishlist items to account.",
+      "went_wrong":"Something went wrong."
+    }
+  },
   "404": {
     "404": "404",
     "img_default_alt": "404 page image",

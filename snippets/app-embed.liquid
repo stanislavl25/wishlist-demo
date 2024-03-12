@@ -14,7 +14,6 @@
 
 
 
-
 <div class="wishlist-embed" data-customer-id="{{ customer.id }}" data-customer-name="{{ customer.first_name }}" data-lang-primary="{{ request.locale.primary }}" data-shop-locale="{{ request.locale.iso_code }}" data-shop-domain="{{ shop.domain }}" data-customer-wishlist="{{ customerSavedWishlist }}">
   <div id="popup-wishlist" class="popup-a popup-wishlist" style="--ppd: 20px;">
       <div class="box-outer">
@@ -26,8 +25,16 @@
 
             </div>
             {% if customer %}
+              <div class="wishlist-share-url-container">
+                <div class="wishlist-share-url">
+                  <input type="text" />
+                  <button>Copy to Clipboard</button>
+                </div>
+              </div>
               <div class="save-into-account">
-                <div class="action-feedback" style="opacity: 0;">
+                <div class="action-feedback">
+                  <label style="display: none;" class="action-feedback_success">{{'wishlist.popup.save_success' | t}}</label>
+                  <label style="display: none;" class="action-feedback_fail">{{'wishlist.popup.went_wrong' | t}}</label>
                 </div>
                 <button class="btn-wishlist-save">
                   <span class="text">Save Into Account</span>

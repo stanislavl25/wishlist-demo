@@ -795,7 +795,7 @@
       {% else %}
         <picture class="{% if settings.multiply_product_images == 'multiply' %}img-multiply{% elsif settings.multiply_product_images == 'multiply-bg' %}img-multiply-bg{% endif %}">{{ 'product-' | append: placeholder_int | placeholder_svg_tag: 'placeholder-svg' }}</picture>
       {%- endif -%}
-      <button class="wishlist-productcard hidden" title="Wishlist" data-wishlist-button data-product-id="{{ product.id }}"><i class="icon-heart-outline"></i></button>
+      <button class="wishlist-productcard hidden" title="Wishlist" data-product-id="{{ product.id }}"><i class="icon-heart-outline"></i></button>
       {%- if static_color_picker == false and layout != 'hotspot' and layout != 'list' -%}
         {{ color_picker }}
       {%- endif -%}

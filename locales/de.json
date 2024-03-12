@@ -1,4 +1,10 @@
 {
+  "wishlist":{
+    "popup":{
+      "save_success":"Wunschlistenelemente wurden erfolgreich im Konto gespeichert.",
+      "went_wrong":"Etwas ist schief gelaufen."
+    }
+  },
   "404": {
     "404": "404",
     "title": "Nicht gefunden",
